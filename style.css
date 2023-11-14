@@ -89,6 +89,7 @@ span{
 /* Estilos para la tarjeta flotante */
 .tarjeta-flotante {
     position: fixed;
+    min-width: 300px;
     color: aliceblue;
     top: 50%;
     left: 50%;
