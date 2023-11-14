@@ -51,9 +51,9 @@ function buscarPropiedad() {
   // Filtrar las propiedades por cualquier campo que contenga el valor proporcionado
   const propiedadesEncontradas = propiedades.filter(propiedad =>
       (nombre === '' || propiedad.nombre.toLowerCase().includes(nombre)) &&
-      (depto === '' || propiedad.depto.toLowerCase()(depto)) &&
-      (estacionamiento === '' || propiedad.estacionamiento.toString()(estacionamiento)) &&
-      (bodega === '' || propiedad.bodega.toString()(bodega))
+      (depto === '' || propiedad.depto.toLowerCase().includes(depto)) &&
+      (estacionamiento === '' || propiedad.estacionamiento.toString().includes(estacionamiento)) &&
+      (bodega === '' || propiedad.bodega.toString().includes(bodega))
   );
 
   // Mostrar los resultados en la interfaz
