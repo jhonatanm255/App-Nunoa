@@ -12,16 +12,17 @@
 <body>
 
     <div class="content">
-        <h1>App Ñuñoa</h1>
+        <div class="main">
+        <img class="img-logo" src="nunoa-logo-bg.png" alt="">
         <h3>Nombre</h3>
-        <input type="text" id="nombre">
+        <input type="text" id="nombre" required>
 
         <h3>Depto</h3>
-        <input type="text" id="depto">
+        <input type="text" id="depto" required>
         <h3>Estacionamiento</h3>
-        <input type="text" name="estacionamiento" id="est">
+        <input type="text" name="estacionamiento" id="est" required>
         <h3>Bodega</h3>
-        <input type="text" name="edad" id="edad">
+        <input type="text" name="edad" id="bodega" required>
 
         <!-- Contenedor para la tarjeta flotante -->
         <div id="tarjetaFlotante" class="tarjeta-flotante">
@@ -31,8 +32,9 @@
 
         <!-- Agregamos un área para mostrar resultados -->
         <div id="resultados"></div>
+    </div>
 
-        <div class="nav-var">
+        <div class="nav-bar">
             <ul class="nav">
                 <a href="#"><li><span onclick="leerPropiedades()" class="material-symbols-outlined">
                     sort
@@ -48,7 +50,6 @@
                     </span></li></a>
             </ul>
         </div>
-
     </div>
     <script src="app.js"></script>
 </body>

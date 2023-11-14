@@ -2,7 +2,12 @@ function crearPropiedad() {
   const nombre = document.getElementById('nombre').value;
   const depto = document.getElementById('depto').value;
   const estacionamiento = document.getElementById('est').value;
-  const bodega = document.getElementById('edad').value;
+  const bodega = document.getElementById('bodega').value;
+
+  if(nombre === '' || depto === '' || estacionamiento === '' || bodega === ''){
+    alert('Complete todos los campos');
+    return false;
+  }
 
   const propiedad = {
       nombre: nombre,
@@ -10,6 +15,8 @@ function crearPropiedad() {
       estacionamiento: estacionamiento,
       bodega: bodega
   };
+
+  
 
   // Obtener las propiedades existentes
   let propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
@@ -34,7 +41,7 @@ function buscarPropiedad() {
   const nombre = document.getElementById('nombre').value.toLowerCase();
   const depto = document.getElementById('depto').value.toLowerCase();
   const estacionamiento = document.getElementById('est').value.toLowerCase();
-  const bodega = document.getElementById('edad').value.toLowerCase();
+  const bodega = document.getElementById('bodega').value.toLowerCase();
 
   // Obtener las propiedades almacenadas
   const propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
@@ -66,10 +73,10 @@ function mostrarResultados(resultados) {
 
           // Crear contenido de la tarjeta
           const contenidoTarjeta = `
-              <p>Nombre: ${resultado.nombre}</p>
-              <p>Depto: ${resultado.depto}</p>
-              <p>Estacionamiento: ${resultado.estacionamiento}</p>
-              <p>Bodega: ${resultado.bodega}</p>
+              <p><b>Nombre:</b> ${resultado.nombre}</p><br>
+              <p><b>Depto:</b> ${resultado.depto}</p><br>
+              <p><b>Estacionamiento:</b> ${resultado.estacionamiento}</p><br>
+              <p><b>Bodega:</b> ${resultado.bodega}</p><br>
           `;
 
           // Agregar contenido a la tarjeta
