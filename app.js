@@ -71,7 +71,7 @@ function mostrarResultados(resultados) {
       // Iterar sobre los resultados y crear tarjetas para cada uno
       resultados.forEach(resultado => {
           const tarjeta = document.createElement('div');
-          tarjeta.classList.add('tarjeta'); // Puedes agregar clases CSS para estilizar la tarjeta
+          tarjeta.classList.add('tarjeta');
 
           // Crear contenido de la tarjeta
           const contenidoTarjeta = `
