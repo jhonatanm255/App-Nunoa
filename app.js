@@ -34,9 +34,63 @@ function leerPropiedades() {
   // Obtener las propiedades almacenadas
   const propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
 
-  // Mostrar las propiedades en la consola
-  alert(propiedades);
+  // Referencia al contenedor donde se mostrarán las propiedades
+  const resultadosContainer = document.getElementById('resultados');
+
+  // Limpiar el área de resultados antes de mostrar nuevos resultados
+  resultadosContainer.innerHTML = '';
+
+  if (propiedades.length > 0) {
+    // Crear una lista ul para mostrar las propiedades
+    const listaPropiedades = document.createElement('ul');
+    listaPropiedades.classList.add('resultados-lista'); // Aplicar el estilo de scroll
+
+    // Iterar sobre las propiedades y agregar cada una a la lista
+    propiedades.forEach(propiedad => {
+      const li = document.createElement('li');
+
+      // Contenido de cada propiedad
+      const contenidoPropiedad = `
+        <p><b>Nombre:</b> ${propiedad.nombre}</p>
+        <p><b>Depto:</b> ${propiedad.depto}</p>
+        <p><b>Estacionamiento:</b> ${propiedad.estacionamiento}</p>
+        <p><b>Bodega:</b> ${propiedad.bodega}</p>
+      `;
+
+      li.innerHTML = contenidoPropiedad;
+
+      // Agregar espacio entre propiedades con margen bottom
+      li.style.marginBottom = '10px';
+
+      // Agregar el elemento li a la lista
+      listaPropiedades.appendChild(li);
+    });
+
+    // Agregar la lista al contenedor de resultados
+    resultadosContainer.appendChild(listaPropiedades);
+  } else {
+    // Mostrar mensaje si no hay propiedades almacenadas
+    resultadosContainer.textContent = 'No hay propiedades almacenadas.';
+  }
+
+  // Mostrar el botón de cerrar
+  const cerrarBtn = document.createElement('button');
+  cerrarBtn.textContent = 'Cerrar';
+  cerrarBtn.className = 'cerrar-btn';
+  cerrarBtn.onclick = cerrarTarjeta;
+
+  // Agregar el botón de cerrar al contenedor de resultados
+  resultadosContainer.appendChild(cerrarBtn);
+
+  // Ocultar los botones de editar y borrar
+  const btnEditElim = document.querySelector('.btn-edit-elim');
+  btnEditElim.style.display = 'none';
+
+  // Mostrar la tarjeta flotante
+  const tarjetaFlotante = document.getElementById('tarjetaFlotante');
+  tarjetaFlotante.style.display = 'block';
 }
+
 
 function buscarPropiedad() {
   // Obtener los valores de búsqueda desde los campos correspondientes
@@ -71,7 +125,7 @@ function mostrarResultados(resultados) {
       // Iterar sobre los resultados y crear tarjetas para cada uno
       resultados.forEach(resultado => {
           const tarjeta = document.createElement('div');
-          tarjeta.classList.add('tarjeta'); // Puedes agregar clases CSS para estilizar la tarjeta
+          tarjeta.classList.add('tarjeta');
 
           // Crear contenido de la tarjeta
           const contenidoTarjeta = `

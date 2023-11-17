@@ -23,7 +23,7 @@ body {
     border-radius: 10px;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 15vh;
+    margin-top: 5vh;
     box-shadow: 0 4px 12px rgba(44, 44, 44, .8);
 }
 
@@ -36,17 +36,17 @@ button {
     background: rgb(99, 99, 255);
     width: 100%;
     margin-top: 5px;
-    margin-bottom: 70px;
+    margin-bottom: 10px;
     padding: 8px;
     color: aliceblue;
-    font-weight: 600;
+    font-weight: 200;
     border-radius: 5px;
     border: none
 
 }
 
 button:hover {
-    background-color: rgb(0, 17, 32);
+    background-color: rgb(2, 56, 104);
     color: aliceblue;
     transition: .3s;
 }
@@ -96,9 +96,8 @@ span{
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: rgb(255, 255, 255);
-    padding: 50px;
+    padding: 40px 10px;
     border-radius: 10px;
-    
     box-shadow: 0 4px 8px rgb(52, 51, 51);
     z-index: 1000; /* Asegura que la tarjeta esté por encima del contenido de la página */
     display: none; /* Por defecto, oculta la tarjeta flotante */
@@ -111,6 +110,37 @@ span{
     justify-content: center;
     align-items: center;
     margin-left: 10%;
-    
-    
   }
+
+  .btn-edit-elim{
+    display: flex;
+    gap: 10px;
+  }
+
+  .edit{
+    background-color: rgb(16, 162, 0);
+    color: aliceblue;
+    font-weight: 200;
+  }
+
+  .edit:hover{
+    background-color: rgb(10, 95, 0);
+  }
+
+  .elim{
+    background-color: #B22222;
+    color: aliceblue;
+    font-weight: 200;
+  }
+
+  .elim:hover{
+    background-color: #800101;
+  }
+
+
+.resultados-lista {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+
