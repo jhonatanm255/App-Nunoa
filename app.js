@@ -79,9 +79,6 @@ function leerPropiedades() {
   cerrarBtn.className = 'cerrar-btn';
   cerrarBtn.onclick = cerrarTarjeta;
 
-  // Agregar el botón de cerrar al contenedor de resultados
-  resultadosContainer.appendChild(cerrarBtn);
-
   // Ocultar los botones de editar y borrar
   const btnEditElim = document.querySelector('.btn-edit-elim');
   btnEditElim.style.display = 'none';
@@ -102,6 +99,11 @@ function buscarPropiedad() {
   // Obtener las propiedades almacenadas
   const propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
 
+  if (nombre === '' && depto === '' && estacionamiento === '' && bodega === '') {
+    alert('Ingrese al menos un criterio de búsqueda');
+    return;
+  }
+
   // Filtrar las propiedades por cualquier campo que contenga el valor proporcionado
   const propiedadesEncontradas = propiedades.filter(propiedad =>
       (nombre === '' || propiedad.nombre.toLowerCase().includes(nombre)) &&
@@ -109,6 +111,9 @@ function buscarPropiedad() {
       (estacionamiento === '' || propiedad.estacionamiento.toString().includes(estacionamiento)) &&
       (bodega === '' || propiedad.bodega.toString().includes(bodega))
   );
+
+  const btnEditElim = document.querySelector('.btn-edit-elim');
+  btnEditElim.style.display = 'flex';
 
   // Mostrar los resultados en la interfaz
   mostrarResultados(propiedadesEncontradas);
@@ -157,6 +162,87 @@ function cerrarTarjeta() {
   tarjetaFlotante.style.display = 'none';
 }
 
-  
 
- 
+// CODIGO PARA EDITAR REGISTROS
+
+// ... (tu código anterior)
+
+function obtenerPropiedadSeleccionada() {
+  // Obtener las propiedades almacenadas
+  const propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
+
+  // Implementa la lógica para determinar cuál propiedad está seleccionada
+  // Puedes ajustar esto según cómo determines qué propiedad se selecciona
+  // Puedes considerar algún tipo de interacción del usuario o lógica específica de la aplicación
+
+  // Aquí, simplemente seleccionamos la primera propiedad como ejemplo
+  if (propiedades.length > 0) {
+    return propiedades[0];
+  } else {
+    return null; // Retorna null si no hay propiedades almacenadas
+  }
+}
+
+function editarPropiedad() {
+  // Cerrar la ventana flotante antes de abrir el formulario de edición
+  cerrarTarjeta();
+
+  // Obtener la propiedad seleccionada para editar
+  const propiedad = obtenerPropiedadSeleccionada();
+
+  if (propiedad) {
+    // Mostrar el formulario de edición encima de otros elementos
+    const formularioEdicion = document.getElementById('formularioEdicion');
+    formularioEdicion.style.display = 'block';
+    formularioEdicion.style.zIndex = '1000'; // Valor alto para que aparezca encima
+
+    // Rellenar el formulario con los datos de la propiedad seleccionada
+    document.getElementById('nombreEdicion').value = propiedad.nombre;
+    document.getElementById('deptoEdicion').value = propiedad.depto;
+    document.getElementById('estEdicion').value = propiedad.estacionamiento;
+    document.getElementById('bodegaEdicion').value = propiedad.bodega;
+
+    // Guardar la propiedad actualmente seleccionada (puedes necesitar esto para la actualización)
+    formularioEdicion.propiedadSeleccionada = propiedad;
+  }
+}
+
+function actualizarPropiedad() {
+  // Obtener la propiedad actualmente seleccionada para actualizar
+  const formularioEdicion = document.getElementById('formularioEdicion');
+  const propiedad = formularioEdicion.propiedadSeleccionada;
+
+  if (propiedad) {
+    // Obtener los nuevos valores del formulario
+    const nuevoNombre = document.getElementById('nombreEdicion').value;
+    const nuevoDepto = document.getElementById('deptoEdicion').value;
+    const nuevoEst = document.getElementById('estEdicion').value;
+    const nuevaBodega = document.getElementById('bodegaEdicion').value;
+
+    // Actualizar la propiedad en el almacenamiento local
+    propiedad.nombre = nuevoNombre;
+    propiedad.depto = nuevoDepto;
+    propiedad.estacionamiento = nuevoEst;
+    propiedad.bodega = nuevaBodega;
+
+    // Obtener las propiedades existentes
+    let propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
+
+    // Buscar y reemplazar la propiedad actualizada
+    const indice = propiedades.findIndex(p => p === propiedad);
+    if (indice !== -1) {
+      propiedades[indice] = propiedad;
+    }
+
+    // Guardar en localStorage
+    localStorage.setItem('propiedades', JSON.stringify(propiedades));
+
+    // Cerrar el formulario de edición
+    formularioEdicion.style.display = 'none';
+
+    // Actualizar la visualización de propiedades
+    leerPropiedades();
+  }
+}
+
+// Resto de tu código...
