@@ -13,50 +13,63 @@
 
     <div class="content">
         <div class="main">
-        <img class="img-logo" src="nunoa-logo-bg.png" alt="">
-        <h3>Nombre</h3>
-        <input type="text" id="nombre" required>
-        <h3>Depto</h3>
-        <input type="text" id="depto" required>
-        <h3>Estacionamiento</h3>
-        <input type="text" name="estacionamiento" id="est" required>
-        <h3>Bodega</h3>
-        <input type="text" name="edad" id="bodega" required>
+            <img class="img-logo" src="nunoa-logo-bg.png" alt="">
+            <h3>Nombre</h3>
+            <input type="text" id="nombre" required>
+            <h3>Depto</h3>
+            <input type="text" id="depto" required>
+            <h3>Estacionamiento</h3>
+            <input type="text" name="estacionamiento" id="est" required>
+            <h3>Bodega</h3>
+            <input type="text" name="bodega" id="bodega" required>
 
-        <!-- Contenedor para la tarjeta flotante -->
-        <div id="tarjetaFlotante" class="tarjeta-flotante">
+            <!-- Contenedor para la tarjeta flotante -->
+            <div id="tarjetaFlotante" class="tarjeta-flotante">
+                <div id="resultados"></div>
+                <div class="btn-edit-elim">
+                    <button id="edit" class="edit" onclick="editarPropiedad()">Editar</button>
+                    <button id="elim" class="elim" onclick="eliminarPropiedad()">Borrar</button>
+                </div>
+                <button onclick="cerrarTarjeta()" class="cerrar-btn">Cerrar</button>
+            </div>
+
+            <!-- Agregamos un área para mostrar resultados -->
             <div id="resultados"></div>
-        <div class="btn-edit-elim">
-            <button id="edit" class="edit">Editar</button>
-            <button id="elim" class="elim">Borrar</button>
         </div>
-            <button onclick="cerrarTarjeta()" class="cerrar-btn">Cerrar</button>
-        </div>
-
-        <!-- Agregamos un área para mostrar resultados -->
-        <div id="resultados"></div>
-    </div>
 
         <div class="nav-bar">
             <ul class="nav">
-                <a href="#"><li><span onclick="leerPropiedades()" class="material-symbols-outlined">
-                    sort
-                    </span></li></a>
-                <a href="#"><li><span onclick="crearPropiedad()" class="material-symbols-outlined">
-                    add
-                    </span></li></a>
-                <a href="#"><li><span onclick="buscarPropiedad()" class="material-symbols-outlined">
-                    search
-                    </span></li></a>
-                <a href="#"><li><span class="material-symbols-outlined">
-                    refresh
-                    </span>
-                    </span></li></a>
+                <a href="#"><li><span onclick="leerPropiedades()" class="material-symbols-outlined">sort</span></li></a>
+                <a href="#"><li><span onclick="crearPropiedad()" class="material-symbols-outlined">add</span></li></a>
+                <a href="#"><li><span onclick="buscarPropiedad()" class="material-symbols-outlined">search</span></li></a>
+                <a href="#"><li><span class="material-symbols-outlined">refresh</span></li></a>
             </ul>
         </div>
     </div>
+
+   <!-- ... (tu HTML anterior) -->
+
+<!-- Formulario de edición -->
+<div class="content edicion" id="formularioEdicion" style="display: none;">
+    <div class="main">
+        <img class="img-logo" src="nunoa-logo-bg.png" alt="">
+        <h3>Nombre</h3>
+        <input type="text" id="nombreEdicion" required>
+        <h3>Depto</h3>
+        <input type="text" id="deptoEdicion" required>
+        <h3>Estacionamiento</h3>
+        <input type="text" name="estEdicion" id="estEdicion" required>
+        <h3>Bodega</h3>
+        <input type="text" name="bodegaEdicion" id="bodegaEdicion" required>
+    </div>
+    <button id="btnActualizar" class="cerrar-btn" onclick="actualizarPropiedad()">Actualizar</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
+
     <script src="app.js"></script>
 </body>
-
 </html>
 
