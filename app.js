@@ -196,10 +196,6 @@ function cerrarTarjeta() {
 // Función para refrescar la página
 function refrescarPagina() {
   location.reload();
-}
-
-// Modificar el evento onclick del botón de refresh en tu función leerPropiedades()
-function leerPropiedades() {
 
   // Botón de refresh
   const btnRefresh = document.querySelector('.nav li:last-child');
