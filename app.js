@@ -6,19 +6,17 @@ function crearPropiedad() {
   const estacionamiento = document.getElementById('est').value;
   const bodega = document.getElementById('bodega').value;
 
-  if(nombre === '' || depto === '' || estacionamiento === '' || bodega === ''){
+  if (nombre === '' || depto === '' || estacionamiento === '' || bodega === '') {
     alert('Complete todos los campos');
     return false;
   }
 
   const propiedad = {
-      nombre: nombre,
-      depto: depto,
-      estacionamiento: estacionamiento,
-      bodega: bodega
+    nombre: nombre,
+    depto: depto,
+    estacionamiento: estacionamiento,
+    bodega: bodega
   };
-
-  
 
   // Obtener las propiedades existentes
   let propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
@@ -28,7 +26,40 @@ function crearPropiedad() {
 
   // Guardar en localStorage
   localStorage.setItem('propiedades', JSON.stringify(propiedades));
+
+  // Mostrar la ventana flotante
+  mostrarVentanaFlotante('Registro satisfactorio');
+
+  // Limpiar los campos después de agregar el registro
+  limpiarCampos();
+
+  return true;
 }
+
+function mostrarVentanaFlotante(mensaje) {
+  const ventanaFlotante = document.getElementById('ventanaFlotante');
+  const mensajeFlotante = document.getElementById('mensajeFlotante');
+
+  // Mostrar el mensaje en la ventana flotante
+  mensajeFlotante.textContent = mensaje;
+
+  // Mostrar la ventana flotante
+  ventanaFlotante.style.display = 'block';
+
+  // Ocultar la ventana flotante después de 2 segundos
+  setTimeout(function () {
+    ventanaFlotante.style.display = 'none';
+  }, 2000);
+}
+
+function limpiarCampos() {
+  // Limpiar los campos después de agregar el registro
+  document.getElementById('nombre').value = '';
+  document.getElementById('depto').value = '';
+  document.getElementById('est').value = '';
+  document.getElementById('bodega').value = '';
+}
+
 
 function leerPropiedades() {
   // Obtener las propiedades almacenadas
@@ -43,7 +74,7 @@ function leerPropiedades() {
   if (propiedades.length > 0) {
     // Crear una lista ul para mostrar las propiedades
     const listaPropiedades = document.createElement('ul');
-    listaPropiedades.classList.add('resultados-lista'); // Aplicar el estilo de scroll
+    listaPropiedades.classList.add('resultados-lista'); 
 
     // Iterar sobre las propiedades y agregar cada una a la lista
     propiedades.forEach(propiedad => {
@@ -162,87 +193,16 @@ function cerrarTarjeta() {
   tarjetaFlotante.style.display = 'none';
 }
 
-
-// CODIGO PARA EDITAR REGISTROS
-
-// ... (tu código anterior)
-
-function obtenerPropiedadSeleccionada() {
-  // Obtener las propiedades almacenadas
-  const propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
-
-  // Implementa la lógica para determinar cuál propiedad está seleccionada
-  // Puedes ajustar esto según cómo determines qué propiedad se selecciona
-  // Puedes considerar algún tipo de interacción del usuario o lógica específica de la aplicación
-
-  // Aquí, simplemente seleccionamos la primera propiedad como ejemplo
-  if (propiedades.length > 0) {
-    return propiedades[0];
-  } else {
-    return null; // Retorna null si no hay propiedades almacenadas
-  }
+// Función para refrescar la página
+function refrescarPagina() {
+  location.reload();
 }
 
-function editarPropiedad() {
-  // Cerrar la ventana flotante antes de abrir el formulario de edición
-  cerrarTarjeta();
+// Modificar el evento onclick del botón de refresh en tu función leerPropiedades()
+function leerPropiedades() {
 
-  // Obtener la propiedad seleccionada para editar
-  const propiedad = obtenerPropiedadSeleccionada();
-
-  if (propiedad) {
-    // Mostrar el formulario de edición encima de otros elementos
-    const formularioEdicion = document.getElementById('formularioEdicion');
-    formularioEdicion.style.display = 'block';
-    formularioEdicion.style.zIndex = '1000'; // Valor alto para que aparezca encima
-
-    // Rellenar el formulario con los datos de la propiedad seleccionada
-    document.getElementById('nombreEdicion').value = propiedad.nombre;
-    document.getElementById('deptoEdicion').value = propiedad.depto;
-    document.getElementById('estEdicion').value = propiedad.estacionamiento;
-    document.getElementById('bodegaEdicion').value = propiedad.bodega;
-
-    // Guardar la propiedad actualmente seleccionada (puedes necesitar esto para la actualización)
-    formularioEdicion.propiedadSeleccionada = propiedad;
-  }
+  // Botón de refresh
+  const btnRefresh = document.querySelector('.nav li:last-child');
+  btnRefresh.onclick = refrescarPagina;
 }
 
-function actualizarPropiedad() {
-  // Obtener la propiedad actualmente seleccionada para actualizar
-  const formularioEdicion = document.getElementById('formularioEdicion');
-  const propiedad = formularioEdicion.propiedadSeleccionada;
-
-  if (propiedad) {
-    // Obtener los nuevos valores del formulario
-    const nuevoNombre = document.getElementById('nombreEdicion').value;
-    const nuevoDepto = document.getElementById('deptoEdicion').value;
-    const nuevoEst = document.getElementById('estEdicion').value;
-    const nuevaBodega = document.getElementById('bodegaEdicion').value;
-
-    // Actualizar la propiedad en el almacenamiento local
-    propiedad.nombre = nuevoNombre;
-    propiedad.depto = nuevoDepto;
-    propiedad.estacionamiento = nuevoEst;
-    propiedad.bodega = nuevaBodega;
-
-    // Obtener las propiedades existentes
-    let propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
-
-    // Buscar y reemplazar la propiedad actualizada
-    const indice = propiedades.findIndex(p => p === propiedad);
-    if (indice !== -1) {
-      propiedades[indice] = propiedad;
-    }
-
-    // Guardar en localStorage
-    localStorage.setItem('propiedades', JSON.stringify(propiedades));
-
-    // Cerrar el formulario de edición
-    formularioEdicion.style.display = 'none';
-
-    // Actualizar la visualización de propiedades
-    leerPropiedades();
-  }
-}
-
-// Resto de tu código...

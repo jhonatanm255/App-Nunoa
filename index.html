@@ -27,8 +27,8 @@
             <div id="tarjetaFlotante" class="tarjeta-flotante">
                 <div id="resultados"></div>
                 <div class="btn-edit-elim">
-                    <button id="edit" class="edit" onclick="editarPropiedad()">Editar</button>
-                    <button id="elim" class="elim" onclick="eliminarPropiedad()">Borrar</button>
+                    <!--<button id="edit" class="edit" onclick="editarPropiedad()">Editar</button>
+                    <button id="elim" class="elim" onclick="eliminarPropiedad()">Borrar</button>-->
                 </div>
                 <button onclick="cerrarTarjeta()" class="cerrar-btn">Cerrar</button>
             </div>
@@ -42,12 +42,20 @@
                 <a href="#"><li><span onclick="leerPropiedades()" class="material-symbols-outlined">sort</span></li></a>
                 <a href="#"><li><span onclick="crearPropiedad()" class="material-symbols-outlined">add</span></li></a>
                 <a href="#"><li><span onclick="buscarPropiedad()" class="material-symbols-outlined">search</span></li></a>
-                <a href="#"><li><span class="material-symbols-outlined">refresh</span></li></a>
+                <a href="#"><li><span onclick="refrescarPagina()" class="material-symbols-outlined">refresh</span></li></a>
             </ul>
         </div>
     </div>
 
-   <!-- ... (tu HTML anterior) -->
+<!-- Ventana flotante -->
+<div id="ventanaFlotante" class="ventana-flotante">
+    <div class="msj">
+    <span class="material-symbols-outlined check">
+        check_circle
+        </span><p id="mensajeFlotante"></p></div>
+    
+  </div>
+  
 
 <!-- Formulario de edición -->
 <div class="content edicion" id="formularioEdicion" style="display: none;">
