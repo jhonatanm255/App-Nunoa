@@ -179,3 +179,9 @@ span{
 .msj{
   display: flex;
 }
+
+
+.edicion{
+  z-index: 100;
+  margin-top: -616px;
+}
