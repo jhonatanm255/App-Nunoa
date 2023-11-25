@@ -170,8 +170,12 @@ function mostrarResultados(resultados) {
       // Mostrar la tarjeta flotante
       tarjetaFlotante.style.display = 'block';
   } else {
-      resultadosDiv.textContent = 'No se encontraron propiedades que coincidan con el valor proporcionado';
-      tarjetaFlotante.style.display = 'none';
+    
+      resultadosDiv.textContent = 'No se encontraron registros asociados';
+      tarjetaFlotante.style.display = 'block';
+
+      const btnEditElim = document.querySelector('.btn-edit-elim');
+      btnEditElim.style.display = 'none';
   }
 }
 
