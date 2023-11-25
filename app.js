@@ -162,39 +162,68 @@ function cerrarTarjeta() {
   tarjetaFlotante.style.display = 'none';
 }
 
-
-// CODIGO PARA EDITAR REGISTROS
-
-// ... (tu código anterior)
-
-function obtenerPropiedadSeleccionada() {
+// Función para obtener la propiedad seleccionada por número de departamento
+function obtenerPropiedadSeleccionadaPorNumeroDeDepto(numeroDeDepto) {
   // Obtener las propiedades almacenadas
   const propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
 
-  // Implementa la lógica para determinar cuál propiedad está seleccionada
-  // Puedes ajustar esto según cómo determines qué propiedad se selecciona
-  // Puedes considerar algún tipo de interacción del usuario o lógica específica de la aplicación
+  // Buscar la propiedad por número de departamento
+  return propiedades.find(propiedad => propiedad.depto === numeroDeDepto);
+}
 
-  // Aquí, simplemente seleccionamos la primera propiedad como ejemplo
-  if (propiedades.length > 0) {
-    return propiedades[0];
+// Función para mostrar la tarjeta flotante con los resultados
+function mostrarTarjetaFlotante(numeroDeDepto) {
+  const propiedadEncontrada = obtenerPropiedadSeleccionadaPorNumeroDeDepto(numeroDeDepto);
+
+  if (propiedadEncontrada) {
+    // Mostrar la tarjeta flotante con los resultados
+    const tarjetaFlotante = document.getElementById('tarjetaFlotante');
+    tarjetaFlotante.style.display = 'block';
+
+    // Mostrar los resultados en la tarjeta flotante
+    const resultadosDiv = document.getElementById('resultados');
+    resultadosDiv.innerHTML = `
+      <h3>Nombre: ${propiedadEncontrada.nombre}</h3>
+      <h3>Depto: ${propiedadEncontrada.depto}</h3>
+      <h3>Estacionamiento: ${propiedadEncontrada.estacionamiento}</h3>
+      <h3>Bodega: ${propiedadEncontrada.bodega}</h3>
+    `;
+
+    // Configurar el botón de edición con el número de departamento
+    const btnEdit = document.getElementById('edit');
+    btnEdit.dataset.depto = numeroDeDepto;
   } else {
-    return null; // Retorna null si no hay propiedades almacenadas
+    alert('Propiedad no encontrada');
   }
 }
+
+// Función para buscar propiedad por número de departamento
+function buscarPropiedad() {
+  const numeroDeDepto = document.getElementById('depto').value;
+
+  // Llamar a la función para buscar y mostrar la tarjeta flotante
+  mostrarTarjetaFlotante(numeroDeDepto);
+}
+
+// ... (otras funciones)
+
+// CODIGO PARA EDITAR REGISTROS
 
 function editarPropiedad() {
   // Cerrar la ventana flotante antes de abrir el formulario de edición
   cerrarTarjeta();
 
+  // Obtener el número de departamento seleccionado para editar
+  const numeroDeDepto = document.getElementById('edit').dataset.depto;
+
   // Obtener la propiedad seleccionada para editar
-  const propiedad = obtenerPropiedadSeleccionada();
+  const propiedad = obtenerPropiedadSeleccionadaPorNumeroDeDepto(numeroDeDepto);
 
   if (propiedad) {
     // Mostrar el formulario de edición encima de otros elementos
     const formularioEdicion = document.getElementById('formularioEdicion');
     formularioEdicion.style.display = 'block';
-    formularioEdicion.style.zIndex = '1000'; // Valor alto para que aparezca encima
+    formularioEdicion.style.zIndex = '100'; // Valor alto para que aparezca encima
 
     // Rellenar el formulario con los datos de la propiedad seleccionada
     document.getElementById('nombreEdicion').value = propiedad.nombre;
@@ -229,7 +258,7 @@ function actualizarPropiedad() {
     let propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
 
     // Buscar y reemplazar la propiedad actualizada
-    const indice = propiedades.findIndex(p => p === propiedad);
+    const indice = propiedades.findIndex(p => p.depto === propiedad.depto);
     if (indice !== -1) {
       propiedades[indice] = propiedad;
     }
@@ -240,9 +269,36 @@ function actualizarPropiedad() {
     // Cerrar el formulario de edición
     formularioEdicion.style.display = 'none';
 
-    // Actualizar la visualización de propiedades
-    leerPropiedades();
+    // Puedes mostrar un mensaje de éxito si lo deseas
+    alert('Propiedad actualizada correctamente');
   }
 }
 
-// Resto de tu código...
+
+function eliminarPropiedad(numeroDeDepto) {
+  console.log('Número de departamento a eliminar:', numeroDeDepto);
+
+  if (!numeroDeDepto) {
+    console.error('Número de departamento no proporcionado.');
+    return;
+  }
+
+  // Obtener las propiedades almacenadas
+  let propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
+
+  console.log('Propiedades antes de la eliminación:', propiedades);
+
+  // Filtrar las propiedades para excluir la que se eliminará
+  const propiedadesFiltradas = propiedades.filter(propiedad => propiedad.depto !== numeroDeDepto);
+
+  console.log('Propiedades después de la eliminación:', propiedadesFiltradas);
+
+  // Guardar el nuevo arreglo de propiedades en localStorage
+  localStorage.setItem('propiedades', JSON.stringify(propiedadesFiltradas));
+
+  // Cerrar la tarjeta flotante después de eliminar
+  cerrarTarjeta();
+
+  // Puedes mostrar un mensaje de éxito si lo deseas
+  alert('Propiedad eliminada correctamente');
+}
