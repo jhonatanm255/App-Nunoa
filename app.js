@@ -1,5 +1,5 @@
 
-//CREAR REGISTRO
+//CREAR REGISTRO NUEVO
 function crearPropiedad() {
   const nombre = document.getElementById('nombre').value;
   const depto = document.getElementById('depto').value;
