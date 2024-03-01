@@ -2,17 +2,23 @@
 //CREAR REGISTRO NUEVO
 function crearPropiedad() {
   const nombre = document.getElementById('nombre').value;
+  const nombre2 = document.getElementById('nombre2').value;
+  const nombre3 = document.getElementById('nombre3').value;
+  const nombre4 = document.getElementById('nombre4').value;
   const depto = document.getElementById('depto').value;
   const estacionamiento = document.getElementById('est').value;
   const bodega = document.getElementById('bodega').value;
 
-  if (nombre === '' || depto === '' || estacionamiento === '' || bodega === '') {
+  if ((nombre === '' && nombre2 === '' && nombre3 === '' && nombre4 === '') || depto === '' || estacionamiento === '' || bodega === '') {
     alert('Complete todos los campos');
     return false;
   }
 
   const propiedad = {
     nombre: nombre,
+    nombre2: nombre2,
+    nombre3: nombre3,
+    nombre4: nombre4,
     depto: depto,
     estacionamiento: estacionamiento,
     bodega: bodega
@@ -55,6 +61,9 @@ function mostrarVentanaFlotante(mensaje) {
 function limpiarCampos() {
   // Limpiar los campos después de agregar el registro
   document.getElementById('nombre').value = '';
+  document.getElementById('nombre2').value = '';
+  document.getElementById('nombre3').value = '';
+  document.getElementById('nombre4').value = '';
   document.getElementById('depto').value = '';
   document.getElementById('est').value = '';
   document.getElementById('bodega').value = '';
@@ -79,6 +88,9 @@ function leerPropiedades() {
 
       const contenidoPropiedad = `
         <p><b>Nombre:</b> ${propiedad.nombre}</p>
+        <p><b>Nombre:</b> ${propiedad.nombre2}</p>
+        <p><b>Nombre:</b> ${propiedad.nombre3}</p>
+        <p><b>Nombre:</b> ${propiedad.nombre4}</p>
         <p><b>Depto:</b> ${propiedad.depto}</p>
         <p><b>Estacionamiento:</b> ${propiedad.estacionamiento}</p>
         <p><b>Bodega:</b> ${propiedad.bodega}</p>
@@ -93,7 +105,7 @@ function leerPropiedades() {
       // Agregar el elemento li a la lista
       listaPropiedades.appendChild(li);
       li.style.backgroundColor = 'rgb(220, 220, 220)';
-      li.style.borderRadius = '10px';
+      li.style.borderRadius = '5px';
       li.style.padding = '10px';
     });
 
@@ -123,28 +135,39 @@ function leerPropiedades() {
 function buscarPropiedad() {
   
   const nombre = document.getElementById('nombre').value.toLowerCase();
+  const nombre2 = document.getElementById('nombre2').value.toLowerCase();
+  const nombre3 = document.getElementById('nombre3').value.toLowerCase();
+  const nombre4 = document.getElementById('nombre4').value.toLowerCase();
   const depto = document.getElementById('depto').value.toLowerCase();
   const estacionamiento = document.getElementById('est').value.toLowerCase();
   const bodega = document.getElementById('bodega').value.toLowerCase();
 
   const propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
 
-  if (nombre === '' && depto === '' && estacionamiento === '' && bodega === '') {
+  if (nombre === '' && nombre2 === ''  && nombre3 === '' && nombre4 === '' && depto === '' && estacionamiento === '' && bodega === '') {
     alert('Ingrese al menos un criterio de búsqueda');
     return;
   }
 
-  // Filtrar las propiedades por cualquier campo que contenga el valor proporcionado
+  // Filtrar las propiedades por cualquier campo de nombre que contenga el valor proporcionado
   const propiedadesEncontradas = propiedades.filter(propiedad =>
-      (nombre === '' || propiedad.nombre.toLowerCase().includes(nombre)) &&
-      (depto === '' || propiedad.depto.toLowerCase() === (depto)) &&
-      (estacionamiento === '' || propiedad.estacionamiento.toString().includes(estacionamiento)) &&
-      (bodega === '' || propiedad.bodega.toString().includes(bodega))
+      (nombre === '' || 
+        propiedad.nombre.toLowerCase().includes(nombre) ||
+        propiedad.nombre2.toLowerCase().includes(nombre) ||
+        propiedad.nombre3.toLowerCase().includes(nombre) ||
+        propiedad.nombre4.toLowerCase().includes(nombre)) &&
+      (nombre2 === '' || propiedad.nombre2.toLowerCase().includes(nombre2)) &&
+      (nombre3 === '' || propiedad.nombre3.toLowerCase().includes(nombre3)) &&
+      (nombre4 === '' || propiedad.nombre4.toLowerCase().includes(nombre4)) &&
+      (depto === '' || propiedad.depto.toLowerCase() === depto) &&
+      (estacionamiento === '' || propiedad.estacionamiento.toString() === estacionamiento) &&
+      (bodega === '' || propiedad.bodega.toString() === bodega)
   );
   const btnEditElim = document.querySelector('.btn-edit-elim');
   btnEditElim.style.display = 'flex';
   mostrarResultados(propiedadesEncontradas);
 }
+
 
 function mostrarResultados(resultados) {
   const resultadosDiv = document.getElementById('resultados');
@@ -161,6 +184,9 @@ function mostrarResultados(resultados) {
 
           const contenidoTarjeta = `
               <p><b>Nombre:</b> ${resultado.nombre}</p><br>
+              <p><b>Nombre:</b> ${resultado.nombre2}</p><br>
+              <p><b>Nombre:</b> ${resultado.nombre3}</p><br>
+              <p><b>Nombre:</b> ${resultado.nombre4}</p><br>
               <p><b>Depto:</b> ${resultado.depto}</p><br>
               <p><b>Estacionamiento:</b> ${resultado.estacionamiento}</p><br>
               <p><b>Bodega:</b> ${resultado.bodega}</p><br>
