@@ -87,10 +87,14 @@ function leerPropiedades() {
       li.innerHTML = contenidoPropiedad;
 
       // Agregar espacio entre propiedades con margen bottom
-      li.style.marginBottom = '10px';
+      li.style.marginBottom = '15px';
+      
 
       // Agregar el elemento li a la lista
       listaPropiedades.appendChild(li);
+      li.style.backgroundColor = 'rgb(220, 220, 220)';
+      li.style.borderRadius = '10px';
+      li.style.padding = '10px';
     });
 
     // Agregar la lista al contenedor de resultados
@@ -162,9 +166,11 @@ function mostrarResultados(resultados) {
               <p><b>Bodega:</b> ${resultado.bodega}</p><br>
           `;
           tarjeta.innerHTML = contenidoTarjeta;
+          
 
           // Agregar la tarjeta al área de resultados
           resultadosDiv.appendChild(tarjeta);
+          
       });
 
       // Mostrar la tarjeta flotante
