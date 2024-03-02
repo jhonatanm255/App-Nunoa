@@ -243,6 +243,7 @@ function refrescarPagina() {
   const btnRefresh = document.querySelector('.nav li:last-child');
   btnRefresh.onclick = refrescarPagina;
 }
+
 //EDITAR REGISTROS
 function editarPropiedad() {
   // Obtener el depto de la propiedad seleccionada
@@ -302,6 +303,9 @@ function mostrarFormularioEdicion(propiedad) {
 
   // Rellenar el formulario con los datos de la propiedad
   document.getElementById('nombreEdicion').value = propiedad.nombre;
+  document.getElementById('nombreEdicion2').value = propiedad.nombre2;
+  document.getElementById('nombreEdicion3').value = propiedad.nombre3;
+  document.getElementById('nombreEdicion4').value = propiedad.nombre4;
   document.getElementById('deptoEdicion').value = propiedad.depto;
   document.getElementById('estEdicion').value = propiedad.estacionamiento;
   document.getElementById('bodegaEdicion').value = propiedad.bodega;
@@ -327,6 +331,9 @@ function cerrarTarjeta() {
 function actualizarPropiedad() {
   // Obtener los valores actualizados del formulario de edición
   const nombreEdicion = document.getElementById('nombreEdicion').value;
+  const nombreEdicion2 = document.getElementById('nombreEdicion2').value;
+  const nombreEdicion3 = document.getElementById('nombreEdicion3').value;
+  const nombreEdicion4 = document.getElementById('nombreEdicion4').value;
   const deptoEdicion = document.getElementById('deptoEdicion').value;
   const estEdicion = document.getElementById('estEdicion').value;
   const bodegaEdicion = document.getElementById('bodegaEdicion').value;
@@ -339,6 +346,9 @@ function actualizarPropiedad() {
 
   // Actualizar los valores de la propiedad
   propiedadAEditar.nombre = nombreEdicion;
+  propiedadAEditar.nombre2 = nombreEdicion2;
+  propiedadAEditar.nombre3 = nombreEdicion3;
+  propiedadAEditar.nombre4 = nombreEdicion4;
   propiedadAEditar.estacionamiento = estEdicion;
   propiedadAEditar.bodega = bodegaEdicion;
 
