@@ -42,6 +42,21 @@ function crearPropiedad() {
   return true;
 }
 
+//BOTON DE SLIDE PARA LOS INPUTS RESTANTES
+const btnSlide = document.getElementById('slide');
+const inputOculto = document.querySelector('.inputs-ocultos');
+
+btnSlide.addEventListener('click', (e) => {
+  e.preventDefault();
+    if(inputOculto.style.display === 'none'){
+      inputOculto.style.transition = '1s'
+      inputOculto.style.display = 'block'
+      
+    }else{
+      inputOculto.style.display = 'none'
+    }
+})
+
 function mostrarVentanaFlotante(mensaje) {
   const ventanaFlotante = document.getElementById('ventanaFlotante');
   const mensajeFlotante = document.getElementById('mensajeFlotante');
@@ -307,7 +322,6 @@ function cerrarTarjeta() {
 
   // Restablecer la posición del formulario de búsqueda
   const formularioBusqueda = document.getElementById('formularioBusqueda');
-  formularioBusqueda.style.marginTop = '0';
 }
 
 function actualizarPropiedad() {
