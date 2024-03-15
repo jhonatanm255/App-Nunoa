@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
 </head>
 
 <body>
@@ -83,7 +82,29 @@
     <button id="btnActualizar" class="cerrar-btn act" onclick="actualizarPropiedad()">Actualizar</button>
 </div>
 
+
+<!-- Configuración e inicialización de Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // Tu configuración de Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyA2tLy-veQdIeFqoCFTh-4dGWItrEjw5Vo",
+    authDomain: "resident-4d198.firebaseapp.com",
+    projectId: "resident-4d198",
+    storageBucket: "resident-4d198.appspot.com",
+    messagingSenderId: "596746768855",
+    appId: "1:596746768855:web:8f255f707f2ae3b2c77b92"
+  };
+
+  // Inicializa Firebase con tu configuración
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<!-- Script de tu aplicación -->
 <script src="app.js"></script>
+
 </body>
 </html>
 

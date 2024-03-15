@@ -1,5 +1,7 @@
 
+
 //CREAR REGISTRO NUEVO
+
 function crearPropiedad() {
   const nombre = document.getElementById('nombre').value;
   const nombre2 = document.getElementById('nombre2').value;
@@ -14,7 +16,12 @@ function crearPropiedad() {
     return false;
   }
 
-  const propiedad = {
+  // Obtener la referencia a la colección 'propiedades' en Firestore
+  const propiedadesRef = firebase.firestore().collection('propiedades');
+ 
+
+  // Agregar la nueva propiedad a Firestore
+  propiedadesRef.add({
     nombre: nombre,
     nombre2: nombre2,
     nombre3: nombre3,
@@ -22,25 +29,21 @@ function crearPropiedad() {
     depto: depto,
     estacionamiento: estacionamiento,
     bodega: bodega
-  };
+  })
+  .then(() => {
+    // Mostrar la ventana flotante
+    mostrarVentanaFlotante('Registro satisfactorio');
 
-  // Obtener las propiedades existentes
-  let propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
-
-  // Agregar la nueva propiedad
-  propiedades.push(propiedad);
-
-  // Guardar en localStorage
-  localStorage.setItem('propiedades', JSON.stringify(propiedades));
-
-  // Mostrar la ventana flotante
-  mostrarVentanaFlotante('Registro satisfactorio');
-
-  // Limpiar los campos después de agregar el registro
-  limpiarCampos();
+    // Limpiar los campos después de agregar el registro
+    limpiarCampos();
+  })
+  .catch(error => {
+    console.error('Error al agregar la propiedad:', error);
+  });
 
   return true;
 }
+
 
 //BOTON DE SLIDE PARA LOS INPUTS RESTANTES
 const btnSlide = document.getElementById('slide');
@@ -73,6 +76,7 @@ function mostrarVentanaFlotante(mensaje) {
   }, 2000);
 }
 
+// FUNCION PARA LIMPIAR CAMPOS
 function limpiarCampos() {
   // Limpiar los campos después de agregar el registro
   document.getElementById('nombre').value = '';
@@ -83,72 +87,70 @@ function limpiarCampos() {
   document.getElementById('est').value = '';
   document.getElementById('bodega').value = '';
 }
+limpiarCampos()
 
-//LEER LOS REGISTROS
+// FUNCION PARA LEER LAS PROPIEDADES
 function leerPropiedades() {
-
-  const propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
-  const resultadosContainer = document.getElementById('resultados');
+  // Obtener la referencia a la colección 'propiedades' en Firestore
+  const propiedadesRef = firebase.firestore().collection('propiedades');
 
   // Limpiar el área de resultados antes de mostrar nuevos resultados
+  const resultadosContainer = document.getElementById('resultados');
   resultadosContainer.innerHTML = '';
 
-  if (propiedades.length > 0) {
-    const listaPropiedades = document.createElement('ul');
-    listaPropiedades.classList.add('resultados-lista'); 
+  // Obtener todos los documentos de la colección 'propiedades'
+  propiedadesRef.get()
+    .then(querySnapshot => {
+      if (querySnapshot.empty) {
+        // Mostrar mensaje si no hay propiedades almacenadas
+        resultadosContainer.textContent = 'No hay propiedades almacenadas.';
+      } else {
+        // Crear una lista para almacenar las propiedades
+        const listaPropiedades = document.createElement('ul');
+        listaPropiedades.classList.add('resultados-lista');
 
-    // Iterar sobre las propiedades y agregar cada una a la lista
-    propiedades.forEach(propiedad => {
-      const li = document.createElement('li');
+        // Iterar sobre los documentos y agregar cada propiedad a la lista
+        querySnapshot.forEach(doc => {
+          const propiedad = doc.data();
+          const li = document.createElement('li');
 
-      const contenidoPropiedad = `
-        <p><b>Nombre:</b> ${propiedad.nombre}</p>
-        <p><b>Nombre:</b> ${propiedad.nombre2}</p>
-        <p><b>Nombre:</b> ${propiedad.nombre3}</p>
-        <p><b>Nombre:</b> ${propiedad.nombre4}</p>
-        <p><b>Depto:</b> ${propiedad.depto}</p>
-        <p><b>Estacionamiento:</b> ${propiedad.estacionamiento}</p>
-        <p><b>Bodega:</b> ${propiedad.bodega}</p>
-      `;
+          const contenidoPropiedad = `
+            <p><b>Nombre:</b> ${propiedad.nombre}</p>
+            <p><b>Nombre:</b> ${propiedad.nombre2}</p>
+            <p><b>Nombre:</b> ${propiedad.nombre3}</p>
+            <p><b>Nombre:</b> ${propiedad.nombre4}</p>
+            <p><b>Depto:</b> ${propiedad.depto}</p>
+            <p><b>Estacionamiento:</b> ${propiedad.estacionamiento}</p>
+            <p><b>Bodega:</b> ${propiedad.bodega}</p>
+          `;
 
-      li.innerHTML = contenidoPropiedad;
+          li.innerHTML = contenidoPropiedad;
+          li.style.marginBottom = '15px';
+          li.style.backgroundColor = 'rgb(220, 220, 220)';
+          li.style.borderRadius = '5px';
+          li.style.padding = '10px';
 
-      // Agregar espacio entre propiedades con margen bottom
-      li.style.marginBottom = '15px';
-      
+          // Agregar el elemento li a la lista
+          listaPropiedades.appendChild(li);
+        });
 
-      // Agregar el elemento li a la lista
-      listaPropiedades.appendChild(li);
-      li.style.backgroundColor = 'rgb(220, 220, 220)';
-      li.style.borderRadius = '5px';
-      li.style.padding = '10px';
+        // Agregar la lista al contenedor de resultados
+        resultadosContainer.appendChild(listaPropiedades);
+      }
+    })
+    .catch(error => {
+      console.error('Error al obtener propiedades:', error);
     });
-
-    // Agregar la lista al contenedor de resultados
-    resultadosContainer.appendChild(listaPropiedades);
-  } else {
-    // Mostrar mensaje si no hay propiedades almacenadas
-    resultadosContainer.textContent = 'No hay propiedades almacenadas.';
-  }
-
-  // Mostrar el botón de cerrar
-  const cerrarBtn = document.createElement('button');
-  cerrarBtn.textContent = 'Cerrar';
-  cerrarBtn.className = 'cerrar-btn';
-  cerrarBtn.onclick = cerrarTarjeta;
-
-  // Ocultar los botones de editar y borrar
-  const btnEditElim = document.querySelector('.btn-edit-elim');
-  btnEditElim.style.display = 'none';
 
   // Mostrar la tarjeta flotante
   const tarjetaFlotante = document.getElementById('tarjetaFlotante');
   tarjetaFlotante.style.display = 'block';
 }
 
+
 //BUSCAR REGISTROS
 function buscarPropiedad() {
-  
+  // Obtener los valores de búsqueda
   const nombre = document.getElementById('nombre').value.toLowerCase();
   const nombre2 = document.getElementById('nombre2').value.toLowerCase();
   const nombre3 = document.getElementById('nombre3').value.toLowerCase();
@@ -157,30 +159,45 @@ function buscarPropiedad() {
   const estacionamiento = document.getElementById('est').value.toLowerCase();
   const bodega = document.getElementById('bodega').value.toLowerCase();
 
-  const propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
+  // Obtener la referencia a la colección 'propiedades' en Firestore
+  const propiedadesRef = firebase.firestore().collection('propiedades');
 
-  if (nombre === '' && nombre2 === ''  && nombre3 === '' && nombre4 === '' && depto === '' && estacionamiento === '' && bodega === '') {
-    alert('Ingrese al menos un criterio de búsqueda');
-    return;
+  // Construir la consulta
+  let query = propiedadesRef;
+  if (nombre !== '') {
+    query = query.where('nombre', '==', nombre);
+  }
+  if (nombre2 !== '') {
+    query = query.where('nombre2', '==', nombre2);
+  }
+  if (nombre3 !== '') {
+    query = query.where('nombre3', '==', nombre3);
+  }
+  if (nombre4 !== '') {
+    query = query.where('nombre4', '==', nombre4);
+  }
+  if (depto !== '') {
+    query = query.where('depto', '==', depto);
+  }
+  if (estacionamiento !== '') {
+    query = query.where('estacionamiento', '==', parseInt(estacionamiento)); // Convertir a número
+  }
+  if (bodega !== '') {
+    query = query.where('bodega', '==', parseInt(bodega)); // Convertir a número
   }
 
-  // Filtrar las propiedades por cualquier campo de nombre que contenga el valor proporcionado
-  const propiedadesEncontradas = propiedades.filter(propiedad =>
-      (nombre === '' || 
-        propiedad.nombre.toLowerCase().includes(nombre) ||
-        propiedad.nombre2.toLowerCase().includes(nombre) ||
-        propiedad.nombre3.toLowerCase().includes(nombre) ||
-        propiedad.nombre4.toLowerCase().includes(nombre)) &&
-      (nombre2 === '' || propiedad.nombre2.toLowerCase().includes(nombre2)) &&
-      (nombre3 === '' || propiedad.nombre3.toLowerCase().includes(nombre3)) &&
-      (nombre4 === '' || propiedad.nombre4.toLowerCase().includes(nombre4)) &&
-      (depto === '' || propiedad.depto.toLowerCase() === depto) &&
-      (estacionamiento === '' || propiedad.estacionamiento.toString() === estacionamiento) &&
-      (bodega === '' || propiedad.bodega.toString() === bodega)
-  );
-  const btnEditElim = document.querySelector('.btn-edit-elim');
-  btnEditElim.style.display = 'flex';
-  mostrarResultados(propiedadesEncontradas);
+  // Ejecutar la consulta
+  query.get()
+    .then(querySnapshot => {
+      const resultados = [];
+      querySnapshot.forEach(doc => {
+        resultados.push(doc.data());
+      });
+      mostrarResultados(resultados);
+    })
+    .catch(error => {
+      console.error('Error al buscar propiedades:', error);
+    });
 }
 
 
@@ -226,14 +243,7 @@ function mostrarResultados(resultados) {
   }
 }
 
-function cerrarTarjeta() {
-  const tarjetaFlotante = document.getElementById('tarjetaFlotante');
-  tarjetaFlotante.style.display = 'none';
 
-  // Restablecer la posición del formulario de búsqueda
-  const formularioBusqueda = document.getElementById('formularioBusqueda');
-  formularioBusqueda.style.marginTop = '0';
-}
 
 
 // FUNCION PARA REFRESCAR APP
