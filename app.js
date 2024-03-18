@@ -1,7 +1,6 @@
 
 
 //CREAR REGISTRO NUEVO
-
 function crearPropiedad() {
   const nombre = document.getElementById('nombre').value;
   const nombre2 = document.getElementById('nombre2').value;
@@ -19,8 +18,6 @@ function crearPropiedad() {
   // Obtener la referencia a la colección 'propiedades' en Firestore
   const propiedadesRef = firebase.firestore().collection('propiedades');
  
-
-  // Agregar la nueva propiedad a Firestore
   propiedadesRef.add({
     nombre: nombre,
     nombre2: nombre2,
@@ -31,10 +28,7 @@ function crearPropiedad() {
     bodega: bodega
   })
   .then(() => {
-    // Mostrar la ventana flotante
     mostrarVentanaFlotante('Registro satisfactorio');
-
-    // Limpiar los campos después de agregar el registro
     limpiarCampos();
   })
   .catch(error => {
@@ -43,7 +37,6 @@ function crearPropiedad() {
 
   return true;
 }
-
 
 //BOTON DE SLIDE PARA LOS INPUTS RESTANTES
 const btnSlide = document.getElementById('slide');
@@ -64,13 +57,9 @@ function mostrarVentanaFlotante(mensaje) {
   const ventanaFlotante = document.getElementById('ventanaFlotante');
   const mensajeFlotante = document.getElementById('mensajeFlotante');
 
-  // Mostrar el mensaje en la ventana flotante
   mensajeFlotante.textContent = mensaje;
-
-  // Mostrar la ventana flotante
   ventanaFlotante.style.display = 'block';
 
-  // Ocultar la ventana flotante después de 2 segundos
   setTimeout(function () {
     ventanaFlotante.style.display = 'none';
   }, 2000);
@@ -78,7 +67,6 @@ function mostrarVentanaFlotante(mensaje) {
 
 // FUNCION PARA LIMPIAR CAMPOS
 function limpiarCampos() {
-  // Limpiar los campos después de agregar el registro
   document.getElementById('nombre').value = '';
   document.getElementById('nombre2').value = '';
   document.getElementById('nombre3').value = '';
@@ -91,7 +79,6 @@ limpiarCampos()
 
 // FUNCION PARA LEER LAS PROPIEDADES
 function leerPropiedades() {
-  // Obtener la referencia a la colección 'propiedades' en Firestore
   const propiedadesRef = firebase.firestore().collection('propiedades');
 
   // Limpiar el área de resultados antes de mostrar nuevos resultados
@@ -130,12 +117,13 @@ function leerPropiedades() {
           li.style.borderRadius = '5px';
           li.style.padding = '10px';
 
-          // Agregar el elemento li a la lista
           listaPropiedades.appendChild(li);
         });
 
-        // Agregar la lista al contenedor de resultados
         resultadosContainer.appendChild(listaPropiedades);
+        // Ocultar la ventana de editar y borrar
+      const btnEditElim = document.querySelector('.btn-edit-elim');
+      btnEditElim.style.display = 'none';
       }
     })
     .catch(error => {
@@ -147,10 +135,8 @@ function leerPropiedades() {
   tarjetaFlotante.style.display = 'block';
 }
 
-
 //BUSCAR REGISTROS
 function buscarPropiedad() {
-  // Obtener los valores de búsqueda
   const nombre = document.getElementById('nombre').value.toLowerCase();
   const nombre2 = document.getElementById('nombre2').value.toLowerCase();
   const nombre3 = document.getElementById('nombre3').value.toLowerCase();
@@ -159,7 +145,6 @@ function buscarPropiedad() {
   const estacionamiento = document.getElementById('est').value.toLowerCase();
   const bodega = document.getElementById('bodega').value.toLowerCase();
 
-  // Obtener la referencia a la colección 'propiedades' en Firestore
   const propiedadesRef = firebase.firestore().collection('propiedades');
 
   // Construir la consulta
@@ -180,10 +165,10 @@ function buscarPropiedad() {
     query = query.where('depto', '==', depto);
   }
   if (estacionamiento !== '') {
-    query = query.where('estacionamiento', '==', parseInt(estacionamiento)); // Convertir a número
+    query = query.where('estacionamiento', '==', parseInt(estacionamiento));
   }
   if (bodega !== '') {
-    query = query.where('bodega', '==', parseInt(bodega)); // Convertir a número
+    query = query.where('bodega', '==', parseInt(bodega));
   }
 
   // Ejecutar la consulta
@@ -200,12 +185,10 @@ function buscarPropiedad() {
     });
 }
 
-
 function mostrarResultados(resultados) {
   const resultadosDiv = document.getElementById('resultados');
   const tarjetaFlotante = document.getElementById('tarjetaFlotante');
 
-  // Limpiar el área de resultados antes de mostrar nuevos resultados
   resultadosDiv.innerHTML = '';
 
   if (resultados.length > 0) {
@@ -243,9 +226,6 @@ function mostrarResultados(resultados) {
   }
 }
 
-
-
-
 // FUNCION PARA REFRESCAR APP
 function refrescarPagina() {
   location.reload();
@@ -254,37 +234,29 @@ function refrescarPagina() {
   btnRefresh.onclick = refrescarPagina;
 }
 
-//EDITAR REGISTROS
-function editarPropiedad() {
-  // Obtener el depto de la propiedad seleccionada
-  const deptoSeleccionado = document.getElementById('depto').value;
-
-  // Obtener las propiedades almacenadas
-  const propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
-
-  // Buscar la propiedad con el depto seleccionado
-  const propiedadAEditar = propiedades.find(propiedad => propiedad.depto === deptoSeleccionado);
-
-  // Mostrar el formulario de edición
-  mostrarFormularioEdicion(propiedadAEditar);
-}
-
-//ELIMINAR REGISTROS
+// ELIMINAR REGISTROS
 function eliminarPropiedad() {
-
   const deptoSeleccionado = document.getElementById('depto').value;
-  let propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
-  propiedades = propiedades.filter(propiedad => propiedad.depto !== deptoSeleccionado);
-  localStorage.setItem('propiedades', JSON.stringify(propiedades));
+  const propiedadesRef = firebase.firestore().collection('propiedades');
 
-  // Ocultar la ventana de editar y borrar
-  const btnEditElim = document.querySelector('.btn-edit-elim');
-  btnEditElim.style.display = 'none';
-
-  // Mostrar la ventana flotante de eliminación satisfactoria
-  mostrarVentanaFlotante('Propiedad eliminada satisfactoriamente');
-  limpiarCampos();
-  cerrarTarjeta();
+  // Buscar y eliminar la propiedad con el depto seleccionado
+  propiedadesRef.where('depto', '==', deptoSeleccionado)
+    .get()
+    .then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        doc.ref.delete().then(() => {
+          // Mostrar la ventana flotante de eliminación satisfactoria
+          mostrarVentanaFlotante('Propiedad eliminada satisfactoriamente');
+          limpiarCampos();
+          cerrarTarjeta();
+        }).catch(error => {
+          console.error('Error al eliminar la propiedad:', error);
+        });
+      });
+    })
+    .catch(error => {
+      console.error('Error al buscar la propiedad a eliminar:', error);
+    });
 }
 
 function mostrarVentanaFlotante(mensaje) {
@@ -297,15 +269,42 @@ function mostrarVentanaFlotante(mensaje) {
   // Mostrar la ventana flotante
   ventanaFlotante.style.display = 'block';
   setTimeout(function () {
-      ventanaFlotante.style.display = 'none';
+    ventanaFlotante.style.display = 'none';
   }, 2000);
+}
+
+//EDITAR REGISTROS
+function editarPropiedad() {
+  const deptoSeleccionado = document.getElementById('depto').value;
+  const propiedadesRef = firebase.firestore().collection('propiedades');
+
+  // Buscar la propiedad con el depto seleccionado
+  propiedadesRef.where('depto', '==', deptoSeleccionado)
+    .get()
+    .then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        const propiedadAEditar = doc.data();
+        mostrarFormularioEdicion(propiedadAEditar);
+      });
+    })
+    .catch(error => {
+      console.error('Error al buscar la propiedad a editar:', error);
+    });
+}
+
+// Restablecer el margen al cerrar el formulario de edición
+function cerrarTarjeta() {
+  const tarjetaFlotante = document.getElementById('tarjetaFlotante');
+  tarjetaFlotante.style.display = 'none';
+
+  // Restablecer la posición del formulario de búsqueda
+  const formularioBusqueda = document.getElementById('formularioBusqueda');
 }
 
 //FORMULARIO EDICION
 function mostrarFormularioEdicion(propiedad) {
   // Ocultar la tarjeta flotante
-  const tarjetaFlotante = document.getElementById('tarjetaFlotante');
-  tarjetaFlotante.style.display = 'none';
+  cerrarTarjeta();
 
   // Mostrar el formulario de edición
   const formularioEdicion = document.getElementById('formularioEdicion');
@@ -322,22 +321,14 @@ function mostrarFormularioEdicion(propiedad) {
 
   // Asegurar que ambos formularios estén alineados
   const formularioBusqueda = document.getElementById('formularioBusqueda');
-  formularioBusqueda.style.marginTop = '0'; 
+  formularioBusqueda.style.marginTop = '0';
 
   // Cambiar el orden de los formularios (edición encima de búsqueda)
   const main = document.querySelector('.main');
   main.insertBefore(formularioEdicion, main.firstChild);
 }
 
-// Restablecer el margen al cerrar el formulario de edición
-function cerrarTarjeta() {
-  const tarjetaFlotante = document.getElementById('tarjetaFlotante');
-  tarjetaFlotante.style.display = 'none';
-
-  // Restablecer la posición del formulario de búsqueda
-  const formularioBusqueda = document.getElementById('formularioBusqueda');
-}
-
+//ACTUALIZAR PROPIEDAD
 function actualizarPropiedad() {
   // Obtener los valores actualizados del formulario de edición
   const nombreEdicion = document.getElementById('nombreEdicion').value;
@@ -348,48 +339,32 @@ function actualizarPropiedad() {
   const estEdicion = document.getElementById('estEdicion').value;
   const bodegaEdicion = document.getElementById('bodegaEdicion').value;
 
-  // Obtener las propiedades almacenadas
-  let propiedades = JSON.parse(localStorage.getItem('propiedades')) || [];
-
-  // Buscar la propiedad que coincide con el depto de edición
-  const propiedadAEditar = propiedades.find(propiedad => propiedad.depto === deptoEdicion);
+  // Obtener una referencia al documento en Firestore que se va a actualizar
+  const propiedadRef = firebase.firestore().collection('propiedades').doc(deptoEdicion);
 
   // Actualizar los valores de la propiedad
-  propiedadAEditar.nombre = nombreEdicion;
-  propiedadAEditar.nombre2 = nombreEdicion2;
-  propiedadAEditar.nombre3 = nombreEdicion3;
-  propiedadAEditar.nombre4 = nombreEdicion4;
-  propiedadAEditar.estacionamiento = estEdicion;
-  propiedadAEditar.bodega = bodegaEdicion;
+  propiedadRef.update({
+    nombre: nombreEdicion,
+    nombre2: nombreEdicion2,
+    nombre3: nombreEdicion3,
+    nombre4: nombreEdicion4,
+    estacionamiento: parseInt(estEdicion),
+    bodega: parseInt(bodegaEdicion)
+  })
+    .then(() => {
+      // Mostrar ventana flotante de edición satisfactoria
+      mostrarVentanaFlotante('Edición satisfactoria');
 
-  // Guardar en localStorage
-  localStorage.setItem('propiedades', JSON.stringify(propiedades));
+      // Ocultar el formulario de edición
+      const formularioEdicion = document.getElementById('formularioEdicion');
+      formularioEdicion.style.display = 'none';
 
-  // Mostrar ventana flotante de edición satisfactoria
-  mostrarVentanaFlotante('Edición satisfactoria');
-
-  // Ocultar el formulario de edición
-  const formularioEdicion = document.getElementById('formularioEdicion');
-  formularioEdicion.style.display = 'none';
-
-  // Limpiar los campos después de la edición
-  limpiarCampos();
+      // Limpiar los campos después de la edición
+      limpiarCampos();
+    })
+    .catch(error => {
+      console.error('Error al actualizar propiedad:', error);
+      // Mostrar ventana flotante de error
+      mostrarVentanaFlotante('Error al actualizar propiedad');
+    });
 }
-
-function mostrarVentanaFlotante(mensaje) {
-  const ventanaFlotante = document.getElementById('ventanaFlotante');
-  const mensajeFlotante = document.getElementById('mensajeFlotante');
-
-  // Mostrar el mensaje en la ventana flotante
-  mensajeFlotante.textContent = mensaje;
-
-  // Mostrar la ventana flotante
-  ventanaFlotante.style.display = 'block';
-
-  // Ocultar la ventana flotante después de 2 segundos
-  setTimeout(function () {
-      ventanaFlotante.style.display = 'none';
-  }, 2000);
-}
-
-
