@@ -99,7 +99,7 @@ function leerPropiedades() {
   resultadosContainer.innerHTML = '';
 
   // Obtener todos los documentos de la colección 'propiedades'
-  propiedadesRef.get()
+  propiedadesRef.orderBy('depto').get()
     .then(querySnapshot => {
       if (querySnapshot.empty) {
         // Mostrar mensaje si no hay propiedades almacenadas
