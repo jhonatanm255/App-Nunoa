@@ -166,8 +166,6 @@ function buscarPropiedad() {
     });
 }
 
-
-
 function mostrarResultados(resultados) {
   const resultadosDiv = document.getElementById('resultados');
   const tarjetaFlotante = document.getElementById('tarjetaFlotante');
@@ -267,13 +265,16 @@ function editarPropiedad() {
     .then(querySnapshot => {
       querySnapshot.forEach(doc => {
         const propiedadAEditar = doc.data();
-        mostrarFormularioEdicion(propiedadAEditar);
+        // Obtener la ID de documento
+        const idDocumento = doc.id;
+        mostrarFormularioEdicion(propiedadAEditar, idDocumento);
       });
     })
     .catch(error => {
       console.error('Error al buscar la propiedad a editar:', error);
     });
 }
+
 
 // Restablecer el margen al cerrar el formulario de edición
 function cerrarTarjeta() {
@@ -285,7 +286,7 @@ function cerrarTarjeta() {
 }
 
 //FORMULARIO EDICION
-function mostrarFormularioEdicion(propiedad) {
+function mostrarFormularioEdicion(propiedad, idDocumento) {
   // Ocultar la tarjeta flotante
   cerrarTarjeta();
 
@@ -302,17 +303,16 @@ function mostrarFormularioEdicion(propiedad) {
   document.getElementById('estEdicion').value = propiedad.estacionamiento;
   document.getElementById('bodegaEdicion').value = propiedad.bodega;
 
-  // Asegurar que ambos formularios estén alineados
-  const formularioBusqueda = document.getElementById('formularioBusqueda');
-  formularioBusqueda.style.marginTop = '0';
-
-  // Cambiar el orden de los formularios (edición encima de búsqueda)
-  const main = document.querySelector('.main');
-  main.insertBefore(formularioEdicion, main.firstChild);
+  // Establecer un atributo de datos en el botón de actualización para almacenar la ID del documento
+  const btnActualizar = document.getElementById('btnActualizar');
+  btnActualizar.dataset.idDocumento = idDocumento;
 }
 
 //ACTUALIZAR PROPIEDAD
 function actualizarPropiedad() {
+  // Obtener la ID del documento desde el botón de actualización
+  const idDocumento = document.getElementById('btnActualizar').dataset.idDocumento;
+
   // Obtener los valores actualizados del formulario de edición
   const nombreEdicion = document.getElementById('nombreEdicion').value;
   const nombreEdicion2 = document.getElementById('nombreEdicion2').value;
@@ -323,7 +323,7 @@ function actualizarPropiedad() {
   const bodegaEdicion = document.getElementById('bodegaEdicion').value;
 
   // Obtener una referencia al documento en Firestore que se va a actualizar
-  const propiedadRef = firebase.firestore().collection('propiedades').doc(deptoEdicion);
+  const propiedadRef = firebase.firestore().collection('propiedades').doc(idDocumento);
 
   // Actualizar los valores de la propiedad
   propiedadRef.update({
