@@ -135,48 +135,29 @@ function leerPropiedades() {
   tarjetaFlotante.style.display = 'block';
 }
 
-//BUSCAR REGISTROS
+//FUNCION PARA BUSCAR PROPIEDADES
 function buscarPropiedad() {
+  // Obtener los valores de los campos de búsqueda y convertirlos a minúsculas
   const nombre = document.getElementById('nombre').value.toLowerCase();
-  const nombre2 = document.getElementById('nombre2').value.toLowerCase();
-  const nombre3 = document.getElementById('nombre3').value.toLowerCase();
-  const nombre4 = document.getElementById('nombre4').value.toLowerCase();
   const depto = document.getElementById('depto').value.toLowerCase();
   const estacionamiento = document.getElementById('est').value.toLowerCase();
   const bodega = document.getElementById('bodega').value.toLowerCase();
 
   const propiedadesRef = firebase.firestore().collection('propiedades');
 
-  // Construir la consulta
-  let query = propiedadesRef;
-  if (nombre !== '') {
-    query = query.where('nombre', '==', nombre);
-  }
-  if (nombre2 !== '') {
-    query = query.where('nombre2', '==', nombre2);
-  }
-  if (nombre3 !== '') {
-    query = query.where('nombre3', '==', nombre3);
-  }
-  if (nombre4 !== '') {
-    query = query.where('nombre4', '==', nombre4);
-  }
-  if (depto !== '') {
-    query = query.where('depto', '==', depto);
-  }
-  if (estacionamiento !== '') {
-    query = query.where('estacionamiento', '==', parseInt(estacionamiento));
-  }
-  if (bodega !== '') {
-    query = query.where('bodega', '==', parseInt(bodega));
-  }
-
   // Ejecutar la consulta
-  query.get()
+  propiedadesRef.get()
     .then(querySnapshot => {
       const resultados = [];
       querySnapshot.forEach(doc => {
-        resultados.push(doc.data());
+        const propiedad = doc.data();
+        // Verificar si alguno de los campos de la propiedad coincide con los valores de búsqueda
+        if ((nombre === '' || Object.values(propiedad).some(value => typeof value === 'string' && value.toLowerCase().includes(nombre))) &&
+            (depto === '' || propiedad.depto.toLowerCase() === depto) &&
+            (estacionamiento === '' || propiedad.estacionamiento.toString() === estacionamiento) &&
+            (bodega === '' || propiedad.bodega.toString() === bodega)) {
+          resultados.push(propiedad);
+        }
       });
       mostrarResultados(resultados);
     })
@@ -184,6 +165,8 @@ function buscarPropiedad() {
       console.error('Error al buscar propiedades:', error);
     });
 }
+
+
 
 function mostrarResultados(resultados) {
   const resultadosDiv = document.getElementById('resultados');
