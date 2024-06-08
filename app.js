@@ -166,8 +166,6 @@ function buscarPropiedad() {
     });
 }
 
-
-
 function mostrarResultados(resultados) {
   const resultadosDiv = document.getElementById('resultados');
   const tarjetaFlotante = document.getElementById('tarjetaFlotante');
