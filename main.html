@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Residentes</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body>
+    <div class="content">
+        <div class="nav-bar-user">
+            <div id="nombreUsuario"></div>
+
+            <div class="logout"><a href="#" onclick="cerrarSesion()"><i class='bx bx-log-in-circle'></i></a></div>
+        </div>
+        <hr>
+        <div class="main">
+            <img class="img-logo" src="logo.png" alt="">
+            <h3><i class='bx bxs-user-rectangle'></i> Residentes</h3>
+            <div class="slide"><input type="text" id="nombre" required><i id="slide" class='bx bx-down-arrow-alt'></i></div>
+            <div class="inputs-ocultos">
+                <input type="text" id="nombre2" required>
+                <input type="text" id="nombre3" required>
+                <input type="text" id="nombre4" required>
+                </div>
+                <h3 class="space-up"><i class='bx bxs-building-house'></i> Departamento</h3>
+                <input type="text" id="depto" required>
+                <h3 class="space-up"><i class='bx bxs-car-garage'></i> Estacionamiento</h3>
+                <input type="text" name="estacionamiento" id="est" required>
+                <h3 class="space-up"><i class='bx bxs-door-open'></i> Bodega</h3>
+                <input type="text" name="bodega" id="bodega" required>
+            
+
+            <!-- Contenedor para la tarjeta flotante -->
+            <div id="tarjetaFlotante" class="tarjeta-flotante">
+                <div id="resultados"></div>
+                <div class="btn-edit-elim">
+                    <button id="edit" class="edit" onclick="editarPropiedad()">Editar</button>
+                    <button id="elim" class="elim" onclick="eliminarPropiedad()">Borrar</button>
+                </div>                
+                <button onclick="cerrarTarjeta()" class="cerrar-btn">Cerrar</button>
+            </div>
+
+            <!-- Agregamos un área para mostrar resultados -->
+            <div id="resultados"></div>
+        </div>
+
+        <div class="nav-bar">
+            <ul class="nav">
+                <a href="#"><li><span onclick="leerPropiedades()" class="material-symbols-outlined">sort</span></li></a>
+                <a href="#"><li><span onclick="crearPropiedad()" class="material-symbols-outlined">add</span></li></a>
+                <a href="#"><li><span onclick="buscarPropiedad()" class="material-symbols-outlined">search</span></li></a>
+                <a href="#"><li><span onclick="refrescarPagina()" class="material-symbols-outlined">refresh</span></li></a>
+            </ul>
+        </div>
+    </div>
+
+<!-- Ventana flotante -->
+<div id="ventanaFlotante" class="ventana-flotante">
+    <div class="msj">
+    <span class="material-symbols-outlined check">
+        check_circle
+        </span><p id="mensajeFlotante"></p></div>
+    
+  </div>
+  
+
+<!-- Formulario de edición -->
+<div class="content edicion" id="formularioEdicion" style="display: none;">
+    <div class="main">
+        <img class="img-logo" src="nunoa-logo-bg.png" alt="">
+        <h3>Nombre</h3>
+        <input type="text" id="nombreEdicion" required>
+        <input type="text" id="nombreEdicion2" required>
+        <input type="text" id="nombreEdicion3" required>
+        <input type="text" id="nombreEdicion4" required>
+        <h3>Depto</h3>
+        <input type="text" id="deptoEdicion" required>
+        <h3>Estacionamiento</h3>
+        <input type="text" name="estEdicion" id="estEdicion" required>
+        <h3>Bodega</h3>
+        <input type="text" name="bodegaEdicion" id="bodegaEdicion" required>
+    </div>
+    <button id="btnActualizar" class="cerrar-btn act" onclick="actualizarPropiedad()">Actualizar</button>
+</div>
+
+
+<!-- Configuración e inicialización de Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+
+
+<script>
+  // Tu configuración de Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyA2tLy-veQdIeFqoCFTh-4dGWItrEjw5Vo",
+    authDomain: "resident-4d198.firebaseapp.com",
+    projectId: "resident-4d198",
+    storageBucket: "resident-4d198.appspot.com",
+    messagingSenderId: "596746768855",
+    appId: "1:596746768855:web:8f255f707f2ae3b2c77b92"
+  };
+
+  // Inicializa Firebase con tu configuración
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<!-- Script de tu aplicación -->
+<script src="user.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
+

@@ -12,13 +12,18 @@ body {
     background: rgb(209, 209, 209);
 }
 
+.main img {
+  width: 120px;
+  height: 130px;
+  margin: 20px auto 10px;
+}
+
 .content {
     position: relative;
     min-width: 400px;
     display: block;
     width: 30%;
     background: rgb(243, 243, 243);
-    padding: 10px 0;
     padding-bottom: 0;
     border-radius: 10px;
     margin-left: auto;
@@ -103,6 +108,13 @@ h1 {
 
 span{
     color: aliceblue;
+}
+
+.nav-bar-user {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
 }
 
 /* Estilos para la tarjeta flotante */
@@ -202,4 +214,30 @@ span{
 .edicion{
   z-index: 100;
   margin-top: -616px;
+}
+
+.inabilitado {
+  color: #adadad;
+}
+
+.o {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto;
+}
+
+.google-account {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  width: 100%;
+  padding: 5px 40px;
+  background-color: rgb(218, 218, 218);
+  border-radius: 35px;
+  cursor: pointer;
+}
+
+.bx {
+  font-size: 30px;
 }
