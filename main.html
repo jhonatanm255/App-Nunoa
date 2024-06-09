@@ -13,7 +13,11 @@
 <body>
     <div class="content">
         <div class="nav-bar-user">
-            <div id="nombreUsuario"></div>
+            <div class="user-info">
+                <img id="user-photo" src="" alt="">
+                <div id="nombreUsuario"></div>
+            </div>
+            
 
             <div class="logout"><a href="#" onclick="cerrarSesion()"><i class='bx bx-log-in-circle'></i></a></div>
         </div>
@@ -72,7 +76,7 @@
 <!-- Formulario de edición -->
 <div class="content edicion" id="formularioEdicion" style="display: none;">
     <div class="main">
-        <img class="img-logo" src="nunoa-logo-bg.png" alt="">
+        <img class="img-logo" src="logo.png" alt="">
         <h3>Nombre</h3>
         <input type="text" id="nombreEdicion" required>
         <input type="text" id="nombreEdicion2" required>

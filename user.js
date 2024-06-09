@@ -1,4 +1,3 @@
-console.log('hola')
 
   
 function iniciarSesion() {
@@ -27,8 +26,17 @@ function iniciarSesion() {
     if (user) {
       // El usuario está autenticado
       const nombreUsuario = user.displayName;
+      const userPhotoURL = user.photoURL;
+
       if (nombreUsuario) {
-        document.getElementById('nombreUsuario').textContent = `Bienvenido, ${nombreUsuario}!`;
+        document.getElementById('nombreUsuario').textContent = ` ${nombreUsuario}`;
+        // Mostrar la foto del usuario si está disponible
+        if (userPhotoURL) {
+          document.getElementById('user-photo').src = userPhotoURL;
+        } else {
+          // Si no hay foto disponible, puedes mostrar una foto por defecto o dejar el campo vacío
+          document.getElementById('user-photo').src = 'default-user-photo.jpg';
+        }
       }
     } else {
       // El usuario no está autenticado
