@@ -43,7 +43,7 @@ body {
 
 button {
     display: block;
-    background: rgb(99, 99, 255);
+    background: #0890ff;
     width: 100%;
     margin-top: 5px;
     margin-bottom: 10px;
@@ -56,7 +56,7 @@ button {
 }
 
 button:hover {
-    background-color: rgb(2, 56, 104);
+    background-color: #006ec9;
     color: aliceblue;
     transition: .3s;
 }
@@ -69,6 +69,14 @@ input {
     border-radius: 5px;
     border: solid 1px rgba(0, 0, 0, .3);
     background-color: rgb(230, 230, 230);
+}
+
+#usuario, #clave {
+  width: 100%;
+}
+
+.main h3 {
+  font-size: 16px;
 }
 
 .inputs-ocultos{
@@ -229,7 +237,7 @@ span{
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 10px auto;
+  margin: 15px auto;
 }
 
 .google-account {
@@ -241,6 +249,11 @@ span{
   background-color: rgb(218, 218, 218);
   border-radius: 35px;
   cursor: pointer;
+  transition: all .3s;
+}
+
+.google-account:hover {
+  background-color: rgb(209, 209, 209);
 }
 
 .google {
