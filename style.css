@@ -274,3 +274,21 @@ span{
   display: flex;
   align-items: center;
 }
+
+/* ESTILOS PARA LA FUNCION DE SELECCIONAR EL CONDOMINIO */
+
+.condominio {
+  display: flex;
+  justify-content: space-around;
+}
+
+select {
+  height: 30px;
+  border: none;
+  background: rgb(243, 243, 243);
+  outline: none;
+}
+
+.btn-add {
+  width: 20%;
+}

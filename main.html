@@ -17,11 +17,17 @@
                 <img id="user-photo" src="" alt="">
                 <div id="nombreUsuario"></div>
             </div>
-            
-
             <div class="logout"><a href="#" onclick="cerrarSesion()"><i class='bx bx-log-in-circle'></i></a></div>
         </div>
         <hr>
+        <div class="condominio">
+            <!-- <label for="opciones">Selecciona una opción:</label> -->
+            <select id="opciones">
+                <option value="opcion1"></option>
+            </select>
+            <button class="btn-add" id="agregar-edif">Agregar</button>
+        </div>
+
         <div class="main">
             <img class="img-logo" src="logo.png" alt="">
             <h3><i class='bx bxs-user-rectangle'></i> Residentes</h3>
@@ -115,6 +121,7 @@
 </script>
 
 <!-- Script de tu aplicación -->
+<script src="condominios.js"></script>
 <script src="user.js"></script>
 <script src="app.js"></script>
 
