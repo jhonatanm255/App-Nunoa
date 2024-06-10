@@ -15,9 +15,19 @@ function crearPropiedad() {
     return false;
   }
 
-  // Obtener la referencia a la colección 'propiedades' en Firestore
-  const propiedadesRef = firebase.firestore().collection('propiedades');
- 
+  // Obtener la referencia al usuario actual
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    console.error('No hay usuario autenticado');
+    return false;
+  }
+  const userId = user.uid;
+
+  // Obtener el condominio seleccionado
+  const condominioSeleccionado = document.getElementById('opciones').value;
+  // Obtener la referencia a la colección de propiedades del usuario y condominio seleccionado
+  const propiedadesRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioSeleccionado).collection('propiedades');
+
   propiedadesRef.add({
     nombre: nombre,
     nombre2: nombre2,
@@ -79,7 +89,19 @@ limpiarCampos()
 
 // FUNCION PARA LEER LAS PROPIEDADES
 function leerPropiedades() {
-  const propiedadesRef = firebase.firestore().collection('propiedades');
+
+ // Obtener la referencia al usuario actual
+ const user = firebase.auth().currentUser;
+ if (!user) {
+   console.error('No hay usuario autenticado');
+   return false;
+ }
+ const userId = user.uid;
+
+ // Obtener el condominio seleccionado
+ const condominioSeleccionado = document.getElementById('opciones').value;
+ // Obtener la referencia a la colección de propiedades del usuario y condominio seleccionado
+ const propiedadesRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioSeleccionado).collection('propiedades');
 
   // Limpiar el área de resultados antes de mostrar nuevos resultados
   const resultadosContainer = document.getElementById('resultados');
@@ -143,8 +165,19 @@ function buscarPropiedad() {
   const estacionamiento = document.getElementById('est').value.toLowerCase();
   const bodega = document.getElementById('bodega').value.toLowerCase();
 
-  const propiedadesRef = firebase.firestore().collection('propiedades');
-
+   // Obtener la referencia al usuario actual
+   const user = firebase.auth().currentUser;
+   if (!user) {
+     console.error('No hay usuario autenticado');
+     return false;
+   }
+   const userId = user.uid;
+ 
+   // Obtener el condominio seleccionado
+   const condominioSeleccionado = document.getElementById('opciones').value;
+   // Obtener la referencia a la colección de propiedades del usuario y condominio seleccionado
+   const propiedadesRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioSeleccionado).collection('propiedades');
+ 
   // Ejecutar la consulta
   propiedadesRef.get()
     .then(querySnapshot => {
