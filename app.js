@@ -295,8 +295,3 @@ function eliminarPropiedad() {
 function cerrarTarjeta() {
   document.getElementById('tarjetaFlotante').style.display = 'none';
 }
-
-const styleSheet = document.createElement('style');
-styleSheet.type = 'text/css';
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
