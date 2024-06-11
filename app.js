@@ -288,10 +288,8 @@ function eliminarPropiedad() {
       console.error('Error al buscar propiedades:', error);
     });
 
-  return true;
-}
-
 //FUNCION PARA CERRAR LA TARJETA FLOTANTE
 function cerrarTarjeta() {
   document.getElementById('tarjetaFlotante').style.display = 'none';
 }
+
