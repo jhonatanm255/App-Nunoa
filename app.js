@@ -9,7 +9,7 @@ function crearPropiedad() {
   const bodega = document.getElementById('bodega').value;
 
   if ((nombre === '' && nombre2 === '' && nombre3 === '' && nombre4 === '') || depto === '' || estacionamiento === '' || bodega === '') {
-    swal ( "¡Complete todos los campos!" , "", "error" )   ;
+    swal('Complete todos los campos', "", "error");
     return false;
   }
 
@@ -22,25 +22,39 @@ function crearPropiedad() {
   const condominioSeleccionado = document.getElementById('opciones').value;
   const propiedadesRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioSeleccionado).collection('propiedades');
 
-  propiedadesRef.add({
-    nombre,
-    nombre2,
-    nombre3,
-    nombre4,
-    depto,
-    estacionamiento,
-    bodega
-  })
-  .then(() => {
-    mostrarVentanaFlotante('Registro satisfactorio');
-    limpiarCampos();
-  })
-  .catch(error => {
-    console.error('Error al agregar la propiedad:', error);
-  });
+  // Comprobar si ya existe el depto
+  propiedadesRef.where('depto', '==', depto).get()
+    .then(querySnapshot => {
+      if (!querySnapshot.empty) {
+        swal('El registro ya existe', "", "warning");
+        return false;
+      } else {
+        // Si no existe, agregar la nueva propiedad
+        propiedadesRef.add({
+          nombre: nombre,
+          nombre2: nombre2,
+          nombre3: nombre3,
+          nombre4: nombre4,
+          depto: depto,
+          estacionamiento: estacionamiento,
+          bodega: bodega
+        })
+        .then(() => {
+          mostrarVentanaFlotante('Registro satisfactorio');
+          limpiarCampos();
+        })
+        .catch(error => {
+          console.error('Error al agregar la propiedad:', error);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error al comprobar el depto:', error);
+    });
 
   return true;
 }
+
 
 //BOTON DE SLIDE PARA LOS INPUTS RESTANTES
 const btnSlide = document.getElementById('slide');
@@ -175,6 +189,7 @@ function mostrarResultados(resultados) {
       resultadosDiv.appendChild(tarjeta);
     });
     tarjetaFlotante.style.display = 'block';
+    document.querySelector('.btn-edit-elim').style.display = 'flex';
   } else {
     resultadosDiv.textContent = 'No se encontraron registros asociados';
     tarjetaFlotante.style.display = 'block';
@@ -227,4 +242,3 @@ function eliminarPropiedad() {
 function cerrarTarjeta() {
   document.getElementById('tarjetaFlotante').style.display = 'none';
 }
-

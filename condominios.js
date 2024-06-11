@@ -3,6 +3,8 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 
+  
+
 document.getElementById('agregar-edif').addEventListener('click', function() {
   const nombreCondominio = prompt('Por favor, ingresa el nombre del condominio:');
   if (nombreCondominio) {
@@ -55,7 +57,8 @@ function displayCondominiums(userId) {
       console.error('Error obteniendo condominios: ', error);
   });
 }
-
+// FUNCION PARA MANTENER LA SELECCION DEL CONDOMINIO AL RECARGAR LA APP
+  
 // Escuchar cambios en el estado de autenticación
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
