@@ -188,75 +188,7 @@ function refrescarPagina() {
 }
 
 // FUNCION PARA EDITAR PROPIEDAD
-function editarPropiedad(id) {
-  const user = firebase.auth().currentUser;
-  if (!user) {
-      console.error('No hay usuario autenticado');
-      return;
-  }
 
-  const userId = user.uid;
-  const condominioSeleccionado = document.getElementById('opciones').value;
-  const propiedadesRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioSeleccionado).collection('propiedades');
-
-  propiedadesRef.doc(id).get().then(doc => {
-      if (doc.exists) {
-          const propiedad = doc.data();
-          document.getElementById('nombre').value = propiedad.nombre;
-          document.getElementById('nombre2').value = propiedad.nombre2;
-          document.getElementById('nombre3').value = propiedad.nombre3;
-          document.getElementById('nombre4').value = propiedad.nombre4;
-          document.getElementById('depto').value = propiedad.depto;
-          document.getElementById('est').value = propiedad.estacionamiento;
-          document.getElementById('bodega').value = propiedad.bodega;
-
-          const actualizarBtn = document.createElement('button');
-          actualizarBtn.textContent = 'Actualizar';
-          actualizarBtn.onclick = () => actualizarPropiedad(id);
-
-          document.getElementById('resultados').appendChild(actualizarBtn);
-      } else {
-          console.log('No se encontró el documento');
-      }
-  }).catch(error => {
-      console.error('Error al obtener la propiedad:', error);
-  });
-}
-
-function actualizarPropiedad(id) {
-  const nombre = document.getElementById('nombre').value;
-  const nombre2 = document.getElementById('nombre2').value;
-  const nombre3 = document.getElementById('nombre3').value;
-  const nombre4 = document.getElementById('nombre4').value;
-  const depto = document.getElementById('depto').value;
-  const estacionamiento = document.getElementById('est').value;
-  const bodega = document.getElementById('bodega').value;
-
-  const user = firebase.auth().currentUser;
-  if (!user) {
-      console.error('No hay usuario autenticado');
-      return;
-  }
-
-  const userId = user.uid;
-  const condominioSeleccionado = document.getElementById('opciones').value;
-  const propiedadesRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioSeleccionado).collection('propiedades');
-
-  propiedadesRef.doc(id).update({
-      nombre,
-      nombre2,
-      nombre3,
-      nombre4,
-      depto,
-      estacionamiento,
-      bodega
-  }).then(() => {
-      mostrarVentanaFlotante('Propiedad actualizada correctamente');
-      leerPropiedades();
-  }).catch(error => {
-      console.error('Error al actualizar la propiedad:', error);
-  });
-}
 
 //ELIMINAR REGISTROS
 function eliminarPropiedad() {
@@ -287,6 +219,9 @@ function eliminarPropiedad() {
     .catch(error => {
       console.error('Error al buscar propiedades:', error);
     });
+
+  return true;
+}
 
 //FUNCION PARA CERRAR LA TARJETA FLOTANTE
 function cerrarTarjeta() {
