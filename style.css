@@ -283,8 +283,6 @@ span{
   display: flex;
   justify-content: space-between;
   padding: 0 20px;
-  background-color: rgb(208, 208, 208);
-
 }
 
 select {
@@ -317,7 +315,7 @@ select {
   align-items: center;
   cursor: pointer;
   margin-top: 3px;
-  color: #01672d;
+  color: #008d3d;
 }
 
 .menu-condominios {
@@ -328,6 +326,5 @@ select {
 
 .menu-condominios #opciones {
   font-size: 14px;
-  background-color: rgb(208, 208, 208);
 }
 
