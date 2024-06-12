@@ -318,6 +318,12 @@ select {
   color: #008d3d;
 }
 
+.icon-qr {
+  font-size: 24px;
+  margin-top: 3px;
+  color: rgb(151, 151, 151);
+}
+
 .menu-condominios {
   display: flex;
   justify-content: end;
@@ -327,4 +333,11 @@ select {
 .menu-condominios #opciones {
   font-size: 14px;
 }
+
+#video {
+  display: none;
+  border-radius: 30px;
+  margin: 15px auto;
+}
+
 

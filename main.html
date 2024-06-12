@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 </head>
 
 <body>
@@ -24,11 +26,16 @@
             <h5 class="sub-title-h5">Mis Condominios</h5>
             <div class="menu-condominios">
                 <select id="opciones">
-                <option value="opcion1"></option>
+                <option value="opcion1"><i class='bx bx-qr' onclick="generarCodigoQR('opcion1')"></i></option>
             </select>
             <div id="agregar-edif"><i class='icon-plus bx bx-plus'></i></div>
+            <i id="startButton" class='icon-qr bx bx-qr-scan'></i>
             </div>
         </div>
+        <!-- <video id="video" width="300" height="300" style="border: 1px solid black;"></video>
+        <button id="startButton">Start</button> -->
+        <video id="video" width="300" height="300" style="border: 1px solid black;"></video>
+         <canvas id="canvas" width="300" height="300" style="display:none;"></canvas>
 
         <div class="main">
             <img class="img-logo" src="logo.png" alt="">
@@ -98,13 +105,11 @@
 
     <button id="btnActualizar" class="cerrar-btn act" onclick="actualizarPropiedad()">Actualizar</button>
 </div>
-
-
+  
 <!-- Configuración e inicialización de Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
-
 
 <script>
   // Tu configuración de Firebase
@@ -122,6 +127,7 @@
 </script>
 
 <!-- Script de tu aplicación -->
+ <script src="qrExportDb.js"></script>
 <script src="condominios.js"></script>
 <script src="user.js"></script>
 <script src="app.js"></script>
