@@ -21,7 +21,6 @@
         </div>
         <hr>
         <div class="condominio">
-            <!-- <label for="opciones">Selecciona una opción:</label> -->
             <select id="opciones">
                 <option value="opcion1"></option>
             </select>
@@ -48,10 +47,10 @@
             <!-- Contenedor para la tarjeta flotante -->
             <div id="tarjetaFlotante" class="tarjeta-flotante">
                 <div id="resultados"></div>
-                <div class="btn-edit-elim">
+                <!-- <div class="btn-edit-elim">
                     <button id="edit" class="edit" onclick="editarPropiedad()">Editar</button>
                     <button id="elim" class="elim" onclick="eliminarPropiedad()">Borrar</button>
-                </div>                
+                </div>                 -->
                 <button onclick="cerrarTarjeta()" class="cerrar-btn">Cerrar</button>
             </div>
             <!-- Agregamos un área para mostrar resultados -->
@@ -92,6 +91,8 @@
         <h3>Bodega</h3>
         <input type="text" name="bodegaEdicion" id="bodegaEdicion" required>
     </div>
+    <input type="hidden" id="deptoActual">
+
     <button id="btnActualizar" class="cerrar-btn act" onclick="actualizarPropiedad()">Actualizar</button>
 </div>
 

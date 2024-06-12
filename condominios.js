@@ -33,7 +33,7 @@ document.getElementById('agregar-edif').addEventListener('click', function() {
           // Aquí podrías mostrar un mensaje o redireccionar a la página de inicio de sesión
       }
   } else {
-      alert('No ingresaste un nombre de condominio.');
+      swal('Rellena este campo.', "" , "warning");
   }
 });
 

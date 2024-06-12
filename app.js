@@ -55,7 +55,6 @@ function crearPropiedad() {
   return true;
 }
 
-
 //BOTON DE SLIDE PARA LOS INPUTS RESTANTES
 const btnSlide = document.getElementById('slide');
 const inputOculto = document.querySelector('.inputs-ocultos');
@@ -203,7 +202,109 @@ function refrescarPagina() {
 }
 
 // FUNCION PARA EDITAR PROPIEDAD
+const btnEditar = document.getElementById('edit');
+btnEditar.addEventListener('click', () => {
+  document.getElementById('formularioEdicion').style.display = 'block';
+});
 
+function mostrarResultados(resultados) {
+  const resultadosDiv = document.getElementById('resultados');
+  const tarjetaFlotante = document.getElementById('tarjetaFlotante');
+
+  resultadosDiv.innerHTML = '';
+
+  if (resultados.length > 0) {
+    resultados.forEach(resultado => {
+      const tarjeta = document.createElement('div');
+      tarjeta.classList.add('tarjeta');
+      tarjeta.innerHTML = `
+        <p><b>Nombre:</b> ${resultado.nombre}</p>
+        <p><b>Nombre:</b> ${resultado.nombre2}</p>
+        <p><b>Nombre:</b> ${resultado.nombre3}</p>
+        <p><b>Nombre:</b> ${resultado.nombre4}</p>
+        <p><b>Depto:</b> ${resultado.depto}</p>
+        <p><b>Estacionamiento:</b> ${resultado.estacionamiento}</p>
+        <p><b>Bodega:</b> ${resultado.bodega}</p>
+        <div class="button-group">
+        <button id="edit" class="edit" onclick="editarPropiedad('${resultado.depto}', '${resultado.nombre}', '${resultado.nombre2}', '${resultado.nombre3}', '${resultado.nombre4}', '${resultado.estacionamiento}', '${resultado.bodega}')">Editar</button>
+        <button id="elim" class="elim" onclick="eliminarPropiedad('${resultado.depto}', '${resultado.nombre}', '${resultado.nombre2}', '${resultado.nombre3}', '${resultado.nombre4}', '${resultado.estacionamiento}', '${resultado.bodega}')">Borrar</button>
+      </div>
+      `;
+      resultadosDiv.appendChild(tarjeta);
+    });
+    tarjetaFlotante.style.display = 'block';
+    document.querySelector('.btn-edit-elim').style.display = 'flex';
+  } else {
+    resultadosDiv.textContent = 'No se encontraron registros asociados';
+    tarjetaFlotante.style.display = 'block';
+    document.querySelector('.btn-edit-elim').style.display = 'none';
+  }
+}
+
+function editarPropiedad(depto, nombre, nombre2, nombre3, nombre4, estacionamiento, bodega) {
+  tarjetaFlotante.style.display = 'none';
+  document.getElementById('formularioEdicion').style.display = 'block';
+  document.getElementById('nombreEdicion').value = nombre;
+  document.getElementById('nombreEdicion2').value = nombre2;
+  document.getElementById('nombreEdicion3').value = nombre3;
+  document.getElementById('nombreEdicion4').value = nombre4;
+  document.getElementById('deptoEdicion').value = depto;
+  document.getElementById('estEdicion').value = estacionamiento;
+  document.getElementById('bodegaEdicion').value = bodega;
+
+  // Guarda el depto actual para la actualización
+  document.getElementById('deptoActual').value = depto;
+}
+
+function actualizarPropiedad() {
+  const nombreEdicion = document.getElementById('nombreEdicion').value;
+  const nombreEdicion2 = document.getElementById('nombreEdicion2').value;
+  const nombreEdicion3 = document.getElementById('nombreEdicion3').value;
+  const nombreEdicion4 = document.getElementById('nombreEdicion4').value;
+  const deptoEdicion = document.getElementById('deptoEdicion').value;
+  const estEdicion = document.getElementById('estEdicion').value;
+  const bodegaEdicion = document.getElementById('bodegaEdicion').value;
+  const deptoActual = document.getElementById('deptoActual').value;
+
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    console.error('No hay usuario autenticado');
+    return false;
+  }
+  const userId = user.uid;
+  const condominioSeleccionado = document.getElementById('opciones').value;
+  const propiedadesRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioSeleccionado).collection('propiedades');
+
+  propiedadesRef.where('depto', '==', deptoActual).get()
+    .then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        doc.ref.update({
+          nombre: nombreEdicion,
+          nombre2: nombreEdicion2,
+          nombre3: nombreEdicion3,
+          nombre4: nombreEdicion4,
+          depto: deptoEdicion,
+          estacionamiento: estEdicion,
+          bodega: bodegaEdicion
+        })
+        .then(() => {
+          mostrarVentanaFlotante('Propiedad actualizada satisfactoriamente');
+          document.getElementById('formularioEdicion').style.display = 'none';
+          limpiarCampos();
+          cerrarTarjeta();
+          leerPropiedades();
+        })
+        .catch(error => {
+          console.error('Error al actualizar la propiedad:', error);
+        });
+      });
+    })
+    .catch(error => {
+      console.error('Error al buscar propiedades:', error);
+    });
+
+  return true;
+}
 
 //ELIMINAR REGISTROS
 function eliminarPropiedad() {
