@@ -1,8 +1,8 @@
+
+// FUNCION PARA ACTIVAR LA CAMARA Y EL LECTOR DE CODIGOS QR
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const startButton = document.getElementById('startButton');
-const switchCameraButton = document.getElementById('switchCamera');
-const selectCamera = document.getElementById('selectCamera');
 const context = canvas.getContext('2d');
 let currentStream;
 
@@ -11,24 +11,13 @@ startButton.addEventListener('click', async () => {
     try {
         const constraints = {
             video: {
-                facingMode: selectCamera.value
+                facingMode: 'environment' // Configurar por defecto la cámara trasera
             }
         };
         await startCamera(constraints);
     } catch (error) {
         console.error('Error accessing the camera:', error);
     }
-});
-
-// Event listener para cambiar de cámara
-switchCameraButton.addEventListener('click', async () => {
-    const newFacingMode = selectCamera.value === 'user' ? 'environment' : 'user';
-    const constraints = {
-        video: {
-            facingMode: newFacingMode
-        }
-    };
-    await startCamera(constraints);
 });
 
 // Función para iniciar la cámara con las restricciones dadas
@@ -65,6 +54,8 @@ async function startCamera(constraints) {
                     console.log('Found QR code', code.data);
                     // Cerrar la cámara después de encontrar un código QR
                     stopCamera();
+                    video.style.display = "none"
+                    canvas.style.display = "none"
                 }
                 requestAnimationFrame(drawFrame);
             };
@@ -85,14 +76,6 @@ function stopCamera() {
         currentStream = null;
     }
 }
-
-
-
-
-      
-      
-      
-
 
     function exportarDatosCondominio(condominioId) {
         const userId = firebase.auth().currentUser.uid;
