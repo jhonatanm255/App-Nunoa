@@ -1,39 +1,60 @@
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const startButton = document.getElementById('startButton');
+const selectCamera = document.getElementById('selectCamera');
+const context = canvas.getContext('2d');
+let currentStream;
 
-      // Función para iniciar la cámara y leer códigos QR
-      const video = document.getElementById('video');
-      const canvas = document.getElementById('canvas');
-      const startButton = document.getElementById('startButton');
-      const context = canvas.getContext('2d');
-      
-      startButton.addEventListener('click', async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: 'environment' } // Acceder a la cámara trasera
-          });
-          video.srcObject = stream;
-          video.play(); // Iniciar la reproducción del video automáticamente
-      
-          // Esperar a que se cargue el video
-          video.addEventListener('loadedmetadata', () => {
+startButton.addEventListener('click', async () => {
+    const constraints = {
+        video: {
+            facingMode: selectCamera.value // 'user' para la cámara frontal, 'environment' para la trasera
+        }
+    };
+
+    try {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => {
+                track.stop();
+            });
+        }
+
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        currentStream = stream;
+
+        video.srcObject = stream;
+        video.play();
+        video.style.display = "block";
+        canvas.style.display = "none";
+
+        video.addEventListener('loadedmetadata', () => {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-          });
-      
-          video.addEventListener('play', () => {
+        });
+
+        video.addEventListener('play', () => {
             console.log('Video is playing');
-            setInterval(() => {
-              context.drawImage(video, 0, 0, canvas.width, canvas.height);
-              const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-              const code = jsQR(imageData.data, imageData.width, imageData.height);
-              if (code) {
-                console.log('Found QR code', code.data);
-              }
-            }, 100);
-          });
-        } catch (error) {
-          console.error('Error accessing the camera:', error);
-        }
-      });
+            const drawFrame = () => {
+                if (video.paused || video.ended) {
+                    return;
+                }
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                if (code) {
+                    console.log('Found QR code', code.data);
+                }
+                requestAnimationFrame(drawFrame);
+            };
+            drawFrame();
+        });
+    } catch (error) {
+        console.error('Error accessing the camera:', error);
+    }
+});
+
+      
+      
       
 
 
