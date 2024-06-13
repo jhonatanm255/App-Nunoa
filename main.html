@@ -19,17 +19,27 @@
                 <img id="user-photo" src="" alt="">
                 <div id="nombreUsuario"></div>
             </div>
-            <div class="logout"><a href="#" onclick="cerrarSesion()"><i class='bx bx-log-in-circle'></i></a></div>
+            <div class="logout"><a href="#" onclick="cerrarSesion()"><i class='bx bx-log-out-circle'></i></a></div>
         </div>
         <hr>
         <div class="condominio">
-            <h5 class="sub-title-h5">Mis Condominios</h5>
             <div class="menu-condominios">
                 <select id="opciones">
-                <option value="opcion1"><i class='bx bx-qr' onclick="generarCodigoQR('opcion1')"></i></option>
-            </select>
-            <div id="agregar-edif"><i class='icon-plus bx bx-plus'></i></div>
-            <i id="startButton" class='icon-qr bx bx-qr-scan'></i>
+                    <option value="opcion"></option>
+                </select>
+            </div>
+
+            <!-- <div id='opciones' class="lista">
+                <div class="edificio">
+                    <i class='icon-qr bx bx-qr' onclick="generarCodigoQR('condominioId')"></i>
+                    <h5>Quinta Suite</h5>
+                    <i class='bx bx-x-circle'></i>
+                </div>
+            </div> -->
+    
+            <div class="btn-add-qr">
+                <div id="agregar-edif"><i class='icon-plus bx bx-plus'></i></div>
+                <i id="startButton" class='icon-qr bx bx-qr-scan'></i>
             </div>
         </div>
 
@@ -109,6 +119,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
+
 
 <script>
   // Tu configuración de Firebase

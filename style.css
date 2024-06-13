@@ -285,6 +285,11 @@ span{
   padding: 0 20px;
 }
 
+.btn-add-qr {
+  display: flex;
+  gap: 10px;
+}
+
 select {
   height: 30px;
   border: none;
@@ -340,4 +345,9 @@ select {
   margin: 15px auto;
 }
 
+.edificio {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
 

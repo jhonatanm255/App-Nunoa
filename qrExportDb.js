@@ -56,6 +56,7 @@ async function startCamera(constraints) {
                     stopCamera();
                     video.style.display = "none"
                     canvas.style.display = "none"
+                    alert(code.data);
                 }
                 requestAnimationFrame(drawFrame);
             };
@@ -76,6 +77,32 @@ function stopCamera() {
         currentStream = null;
     }
 }
+
+// Función para generar código QR
+function generarCodigoQR(condominioId) {
+    const userId = firebase.auth().currentUser.uid;
+    const qrContainer = document.getElementById('qrcode');
+    qrContainer.innerHTML = ''; // Limpiar el contenido anterior
+
+    const db = firebase.firestore();
+    const docRef = db.collection('usuarios').doc(userId).collection('condominios').doc(condominioId);
+
+    docRef.get().then((doc) => {
+        if (doc.exists) {
+            const condominioData = doc.data();
+            const jsonData = JSON.stringify(condominioData);
+            const qr = qrcode(0, 'L');
+            qr.addData(jsonData);
+            qr.make();
+            qrContainer.innerHTML = qr.createImgTag();
+        } else {
+            console.error('No se encontró el documento para el condominio:', condominioId);
+        }
+    }).catch((error) => {
+        console.error('Error obteniendo el documento:', error);
+    });
+}
+
 
     function exportarDatosCondominio(condominioId) {
         const userId = firebase.auth().currentUser.uid;

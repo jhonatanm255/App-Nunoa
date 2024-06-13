@@ -1,9 +1,6 @@
 // Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
-
 const db = firebase.firestore();
-
-  
 
 document.getElementById('agregar-edif').addEventListener('click', function() {
   const nombreCondominio = prompt('Por favor, ingresa el nombre del condominio:');
@@ -72,3 +69,8 @@ firebase.auth().onAuthStateChanged(function(user) {
       // Aquí podrías redireccionar a la página de inicio de sesión
   }
 });
+
+
+
+
+
