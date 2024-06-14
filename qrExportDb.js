@@ -78,55 +78,28 @@ function stopCamera() {
     }
 }
 
-// Función para generar código QR
+
+// Obtener elementos del DOM
+const qrcode = document.getElementById('qrcode');
+const listaCondominios = document.getElementById('opciones');
+
+// Escuchar cambios en la selección de condominios
+listaCondominios.addEventListener('click', function() {
+    const selectedCondominioId = this.value;
+    if (selectedCondominioId) {
+        generarCodigoQR(selectedCondominioId);
+    }
+});
+
+// Función para generar el código QR utilizando QRious
 function generarCodigoQR(condominioId) {
-    const userId = firebase.auth().currentUser.uid;
-    const qrContainer = document.getElementById('qrcode');
-    qrContainer.innerHTML = ''; // Limpiar el contenido anterior
-
-    const db = firebase.firestore();
-    const docRef = db.collection('usuarios').doc(userId).collection('condominios').doc(condominioId);
-
-    docRef.get().then((doc) => {
-        if (doc.exists) {
-            const condominioData = doc.data();
-            const jsonData = JSON.stringify(condominioData);
-            const qr = qrcode(0, 'L');
-            qr.addData(jsonData);
-            qr.make();
-            qrContainer.innerHTML = qr.createImgTag();
-        } else {
-            console.error('No se encontró el documento para el condominio:', condominioId);
-        }
-    }).catch((error) => {
-        console.error('Error obteniendo el documento:', error);
+    console.log('Generando código QR para condominio ID:', condominioId);
+    const qr = new QRious({
+        element: qrcode,
+        value: condominioId,
+        size: 300
     });
 }
 
 
-    function exportarDatosCondominio(condominioId) {
-        const userId = firebase.auth().currentUser.uid;
-        const db = firebase.firestore();
-        const docRef = db.collection('usuarios').doc(userId).collection('condominios').doc(condominioId).collection('propiedades');
-        
-        docRef.get().then((querySnapshot) => {
-          const data = [];
-          querySnapshot.forEach((doc) => {
-            data.push(doc.data());
-          });
-          const json = JSON.stringify(data);
-          descargarArchivo(json, 'datos_condominio.json');
-        });
-      }
-      
-      function descargarArchivo(contenido, nombreArchivo) {
-        const a = document.createElement('a');
-        const archivo = new Blob([contenido], { type: 'application/json' });
-        a.href = URL.createObjectURL(archivo);
-        a.download = nombreArchivo;
-        a.click();
-      }
-       
-      
 
-   

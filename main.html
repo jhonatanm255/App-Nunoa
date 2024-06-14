@@ -7,9 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/qrious"></script>   
 </head>
 
 <body>
@@ -24,25 +23,32 @@
         <hr>
         <div class="condominio">
             <div class="menu-condominios">
-                <select id="opciones">
-                    <option value="opcion"></option>
-                </select>
+                <div class="custom-select">
+                    <span class="icon"><i class='icon-qr bx bx-qr'></i></span>
+                        <select id="opciones">
+                            <option value="" disabled selected hidden>Selecciona un condominio</option>
+                        </select>
+                </div>
             </div>
 
-            <!-- <div id='opciones' class="lista">
-                <div class="edificio">
-                    <i class='icon-qr bx bx-qr' onclick="generarCodigoQR('condominioId')"></i>
-                    <h5>Quinta Suite</h5>
-                    <i class='bx bx-x-circle'></i>
-                </div>
-            </div> -->
-    
             <div class="btn-add-qr">
                 <div id="agregar-edif"><i class='icon-plus bx bx-plus'></i></div>
                 <i id="startButton" class='icon-qr bx bx-qr-scan'></i>
             </div>
         </div>
 
+        <div id="qrcode"></div> <!-- Contenedor para el código QR -->
+
+
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Información del Condominio</h2>
+                <div id="condominioNombre"></div>
+                <div id="qrcode"></div> <!-- Contenedor para el código QR -->
+            </div>
+        </div>
+  
         <video id="video" width="300" height="200"></video>
          <canvas id="canvas" width="300" height="300" style="display:none;"></canvas>
          
@@ -66,13 +72,8 @@
             <!-- Contenedor para la tarjeta flotante -->
             <div id="tarjetaFlotante" class="tarjeta-flotante">
                 <div id="resultados"></div>
-                <!-- <div class="btn-edit-elim">
-                    <button id="edit" class="edit" onclick="editarPropiedad()">Editar</button>
-                    <button id="elim" class="elim" onclick="eliminarPropiedad()">Borrar</button>
-                </div>                 -->
                 <button onclick="cerrarTarjeta()" class="cerrar-btn">Cerrar</button>
             </div>
-            <!-- Agregamos un área para mostrar resultados -->
             <div id="resultados"></div>
         </div>
 
@@ -119,7 +120,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
 
 
 <script>
@@ -142,7 +142,6 @@
 <script src="condominios.js"></script>
 <script src="user.js"></script>
 <script src="app.js"></script>
-
 </body>
 </html>
 

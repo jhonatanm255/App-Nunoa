@@ -34,7 +34,6 @@ document.getElementById('agregar-edif').addEventListener('click', function() {
   }
 });
 
-
 // Obtener los condominios asociados al usuario y mostrarlos en la lista
 function displayCondominiums(userId) {
   const listaCondominios = document.getElementById('opciones');
@@ -69,6 +68,43 @@ firebase.auth().onAuthStateChanged(function(user) {
       // Aquí podrías redireccionar a la página de inicio de sesión
   }
 });
+
+// MODAL Y FUNCION
+
+// Obtener el icono y el modal
+const iconoCondominio = document.querySelector('.menu-condominios .icon');
+const modal = document.getElementById('myModal');
+const spanClose = document.querySelector('.close');
+
+// Cuando se hace clic en el icono, mostrar el modal
+iconoCondominio.addEventListener('click', () => {
+  // Obtener el nombre del condominio seleccionado
+  const nombreCondominioSeleccionado = document.querySelector('#opciones').value;
+
+  // Aquí puedes obtener más detalles del condominio desde tu base de datos o donde los tengas almacenados
+  
+  // Mostrar el nombre del condominio en el modal
+  document.getElementById('condominioNombre').textContent = nombreCondominioSeleccionado;
+
+  // Mostrar el modal
+  modal.style.display = 'block';
+});
+
+// Cuando se hace clic en el botón de cerrar (X), cerrar el modal
+spanClose.addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+
+// Cuando el usuario hace clic fuera del modal, cerrar el modal
+window.addEventListener('click', (event) => {
+  if (event.target === modal) {
+    modal.style.display = 'none';
+  }
+});
+
+
+
+
 
 
 

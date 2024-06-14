@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Código QR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        #qrcode {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Generador de Código QR</h2>
+        <input type="text" id="qrText" placeholder="Ingrese el texto para el QR">
+        <button id="generateQR">Generar QR</button>
+        <canvas id="qrcode"></canvas>
+    </div>
+
+    <!-- Incluye QRious -->
+    <script src="https://cdn.jsdelivr.net/npm/qrious"></script>
+    <script>
+        document.getElementById('generateQR').addEventListener('click', function() {
+            const qrText = document.getElementById('qrText').value.trim();
+
+            if (qrText !== '') {
+                generarCodigoQR(qrText);
+            } else {
+                alert('Por favor, ingrese texto para generar el QR.');
+            }
+        });
+
+        function generarCodigoQR(texto) {
+            const qr = new QRious({
+                element: document.getElementById('qrcode'),
+                value: texto,
+                size: 200,
+                background: 'white',
+                foreground: 'black'
+            });
+        }
+    </script>
+</body>
+</html>

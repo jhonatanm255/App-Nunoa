@@ -121,7 +121,6 @@ function leerPropiedades() {
         });
 
         resultadosContainer.appendChild(listaPropiedades);
-        document.querySelector('.btn-edit-elim').style.display = 'none';
       }
     })
     .catch(error => {
@@ -233,7 +232,6 @@ function mostrarResultados(resultados) {
       resultadosDiv.appendChild(tarjeta);
     });
     tarjetaFlotante.style.display = 'block';
-    document.querySelector('.btn-edit-elim').style.display = 'flex';
   } else {
     resultadosDiv.textContent = 'No se encontraron registros asociados';
     tarjetaFlotante.style.display = 'block';
