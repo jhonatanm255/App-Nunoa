@@ -77,29 +77,3 @@ function stopCamera() {
         currentStream = null;
     }
 }
-
-
-// Obtener elementos del DOM
-const qrcode = document.getElementById('qrcode');
-const listaCondominios = document.getElementById('opciones');
-
-// Escuchar cambios en la selección de condominios
-listaCondominios.addEventListener('click', function() {
-    const selectedCondominioId = this.value;
-    if (selectedCondominioId) {
-        generarCodigoQR(selectedCondominioId);
-    }
-});
-
-// Función para generar el código QR utilizando QRious
-function generarCodigoQR(condominioId) {
-    console.log('Generando código QR para condominio ID:', condominioId);
-    const qr = new QRious({
-        element: qrcode,
-        value: condominioId,
-        size: 300
-    });
-}
-
-
-
