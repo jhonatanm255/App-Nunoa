@@ -78,8 +78,8 @@ function stopCamera() {
     }
 };
 
-const qrcodeContainer = document.getElementById('qrcode');
-        const listaCondominios = document.getElementById('opciones');
+    const qrcodeContainer = document.getElementById('qrcode');
+    const listaCondominios = document.getElementById('opciones');
 
         // Función para generar el código QR del condominio seleccionado
         function generarCodigoQR() {
@@ -87,10 +87,10 @@ const qrcodeContainer = document.getElementById('qrcode');
             if (selectedCondominioId) {
                 console.log('Generando código QR para:', selectedCondominioId);
                 qrcodeContainer.innerHTML = ''; // Limpiar contenido anterior
-                new QRious({
-                    element: qrcodeContainer,
-                    value: selectedCondominioId,
-                    size: 300
+                new QRCode(qrcodeContainer, {
+                    text: selectedCondominioId,
+                    width: 300,
+                    height: 300
                 });
             } else {
                 console.error('No se ha seleccionado ningún condominio.');
