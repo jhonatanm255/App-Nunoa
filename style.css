@@ -366,11 +366,12 @@ select {
 }
 
 .modal-content {
+  position: absolute;
   background-color: #fefefe;
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 30%;
+  width: 100%;
 }
 
 .close {
@@ -388,8 +389,10 @@ select {
 }
 
 #qrcode {
+  display: block;
+  margin: 0 auto;
   width: 300px;
   height: 300px;
-  color: #006ec9;
+  border: solid 2px black;
 }
 

@@ -10,7 +10,6 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> 
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrious"></script>   
 </head>
 
 <body>
@@ -26,10 +25,13 @@
         <div class="condominio">
             <div class="menu-condominios">
                 <div class="custom-select">
-                    <span class="icon"><i class='icon-qr bx bx-qr'></i></span>
-                        <select id="opciones">
-                            <option value="" disabled selected hidden>Selecciona un condominio</option>
-                        </select>
+                    <span onclick="generarCodigoQR()" class="icon"><i class='icon-qr bx bx-qr'></i></span>
+                    <select id="opciones">
+                        <option value="" disabled selected hidden>Selecciona un condominio</option>
+                        <option value="condominio1">Condominio 1</option>
+                        <option value="condominio2">Condominio 2</option>
+                        <option value="condominio3">Condominio 3</option>
+                    </select>
                 </div>
             </div>
 
@@ -119,6 +121,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrious"></script>
+
 
 
 <script>
