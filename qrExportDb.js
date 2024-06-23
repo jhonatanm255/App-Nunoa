@@ -156,39 +156,33 @@ function exportData() {
 
 
 function onScanSuccess(decodedText) {
-    try {
-        const importData = JSON.parse(decodedText);
-        const condominios = importData.condominios;
-        const userId = firebase.auth().currentUser.uid;
+  try {
+      const importData = JSON.parse(decodedText);
+      const condominios = importData.condominios;
+      const userId = firebase.auth().currentUser.uid;
 
-        if (userId && Array.isArray(condominios)) {
-            const batch = db.batch(); // Iniciar una operación por lotes
+      if (userId && Array.isArray(condominios)) {
+          const batch = db.batch(); // Iniciar una operación por lotes
 
-            condominios.forEach(condominio => {
-                const condominioRef = db.collection('users').doc(userId).collection('condominios').doc(condominio.condominioId);
-                batch.set(condominioRef, condominio.data); // Añadir la operación de escritura al lote
+          condominios.forEach(condominio => {
+              const condominioRef = db.collection('users').doc(userId).collection('condominios').doc(condominio.condominioId);
+              batch.set(condominioRef, condominio.data); // Añadir la operación de escritura al lote
+          });
 
-                // Guardar datos de residentes
-                if (condominio.data.residents && Array.isArray(condominio.data.residents)) {
-                    condominio.data.residents.forEach(resident => {
-                        const residentRef = condominioRef.collection('residents').doc(); // Crear un nuevo documento para cada residente
-                        batch.set(residentRef, resident);
-                    });
-                }
-            });
+          batch.commit() // Ejecutar todas las operaciones en el lote
+              .then(() => {
+                  console.log('Condominios agregados o actualizados correctamente');
+              })
+              .catch((error) => {
+                  console.error('Error agregando o actualizando condominios:', error);
+              });
+      } else {
+          console.log('No hay usuario autenticado o los datos del QR no son válidos');
+      }
+  } catch (error) {
+      console.error('Error procesando el QR escaneado:', error);
+  }
 
-            batch.commit() // Ejecutar todas las operaciones en el lote
-                .then(() => {
-                    console.log('Condominios y residentes agregados o actualizados correctamente');
-                    mostrarCondominios(); // Actualizar la lista de condominios
-                })
-                .catch((error) => {
-                    console.error('Error agregando o actualizando condominios:', error);
-                });
-        } else {
-            console.log('No hay usuario autenticado o los datos del QR no son válidos');
-        }
-    } catch (error) {
-        console.error('Error procesando el QR escaneado:', error);
-    }
+  // Detener el escáner (si es necesario)
+  // qrCodeScanner.clear(); // Aquí deberías usar el método correcto para detener el escáner, dependiendo de cómo lo tengas implementado
 }
