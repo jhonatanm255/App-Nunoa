@@ -74,8 +74,6 @@ function stopCamera() {
     }
 }
 
-
-
 function generarCodigoQR() {
     const selectedCondominioId = listaCondominios.value;
     if (selectedCondominioId) {
@@ -105,9 +103,6 @@ function generarCodigoQR() {
     }
 }
 
-
-
-
 function onScanSuccess(decodedText) {
     try {
         const { userId, condominioId } = JSON.parse(decodedText);
@@ -135,10 +130,11 @@ function onScanSuccess(decodedText) {
     }
 }
 
-
-
 function mostrarDatosCondominio(condominioData) {
     // Implementa esta función para mostrar los datos del condominio en tu aplicación
     // Ejemplo: actualizar la interfaz de usuario con los datos del condominio
     console.log('Mostrando datos del condominio:', condominioData);
 }
+
+
+
