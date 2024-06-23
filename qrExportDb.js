@@ -84,13 +84,18 @@ function generarCodigoQR() {
             const userId = user.uid;
             console.log('Generando código QR para el usuario:', userId);
             console.log('Condominio seleccionado:', selectedCondominioId);
+            
+            // Construir el objeto de datos para el código QR
             const qrData = JSON.stringify({ userId, condominioId: selectedCondominioId });
+            
+            // Mostrar el código QR en la interfaz
             qrcodeContainer.innerHTML = ''; // Limpiar contenido anterior
             new QRCode(qrcodeContainer, {
                 text: qrData,
                 width: 300,
                 height: 300
             });
+            
             console.log('QR generado con ID del condominio:', qrData); // Depuración
         } else {
             console.error('No hay usuario autenticado.');
@@ -102,10 +107,12 @@ function generarCodigoQR() {
 
 
 
+
 function onScanSuccess(decodedText) {
     try {
         const { userId, condominioId } = JSON.parse(decodedText);
         if (userId && condominioId) {
+            // Acceder directamente a los datos del condominio en Firestore
             db.collection('users').doc(userId).collection('condominios').doc(condominioId).get()
             .then((doc) => {
                 if (doc.exists) {
@@ -127,6 +134,8 @@ function onScanSuccess(decodedText) {
         console.error('Error procesando el QR escaneado:', error);
     }
 }
+
+
 
 function mostrarDatosCondominio(condominioData) {
     // Implementa esta función para mostrar los datos del condominio en tu aplicación
