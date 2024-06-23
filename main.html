@@ -27,12 +27,8 @@
         <div class="condominio">
             <div class="menu-condominios">
                 <div class="custom-select">
-                    <span onclick="generarCodigoQR()" class="icon"><i class='icon-qr bx bx-qr'></i></span>
+                    <span onclick="exportData()" class="icon"><i class='icon-qr bx bx-qr'></i></span>
                     <select id="opciones">
-                        <option value="" disabled selected hidden>Selecciona un condominio</option>
-                        <option value="condominio1">Condominio 1</option>
-                        <option value="condominio2">Condominio 2</option>
-                        <option value="condominio3">Condominio 3</option>
                     </select>
                 </div>
             </div>
@@ -54,9 +50,6 @@
   
         <video id="video" width="300" height="200"></video>
          <canvas id="canvas" width="300" height="300" style="display:none;"></canvas>
-
-         <button onclick="exportData()">Exportar Datos</button>
-
          
         <div class="main">
             <img class="img-logo" src="logo.png" alt="">

@@ -101,3 +101,29 @@ window.addEventListener('click', (event) => {
     modal.style.display = 'none';
   }
 });
+
+function mostrarCondominios() {
+  const userId = firebase.auth().currentUser.uid;
+  const listaCondominios = document.getElementById('opciones');
+
+  listaCondominios.innerHTML = ''; // Limpiar la lista actual
+
+  db.collection('users').doc(userId).collection('condominios').get()
+      .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              const option = document.createElement('option');
+              option.value = doc.id;
+              option.text = data.name;
+              listaCondominios.appendChild(option);
+          });
+      })
+      .catch((error) => {
+          console.error('Error obteniendo condominios: ', error);
+      });
+}
+
+
+
+
+

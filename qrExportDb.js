@@ -156,26 +156,39 @@ function exportData() {
 
 
 function onScanSuccess(decodedText) {
-  try {
-      const importData = JSON.parse(decodedText);
-      const condominio = importData.condominio;
-      const user = firebase.auth().currentUser;
-      if (user) {
-          const userId = user.uid;
-          db.collection('users').doc(userId).collection('condominios').doc(importData.condominioId).set(condominio)
-          .then(() => {
-              console.log('Condominio agregado correctamente');
-          })
-          .catch((error) => {
-              console.error('Error agregando condominio:', error);
-          });
-      } else {
-          console.log('No hay usuario autenticado');
-      }
-  } catch (error) {
-      console.error('Error procesando el QR escaneado:', error);
-  }
-  // Detener el escáner
-  qrCodeScanner.clear();
-}
+    try {
+        const importData = JSON.parse(decodedText);
+        const condominios = importData.condominios;
+        const userId = firebase.auth().currentUser.uid;
 
+        if (userId && Array.isArray(condominios)) {
+            const batch = db.batch(); // Iniciar una operación por lotes
+
+            condominios.forEach(condominio => {
+                const condominioRef = db.collection('users').doc(userId).collection('condominios').doc(condominio.condominioId);
+                batch.set(condominioRef, condominio.data); // Añadir la operación de escritura al lote
+
+                // Guardar datos de residentes
+                if (condominio.data.residents && Array.isArray(condominio.data.residents)) {
+                    condominio.data.residents.forEach(resident => {
+                        const residentRef = condominioRef.collection('residents').doc(); // Crear un nuevo documento para cada residente
+                        batch.set(residentRef, resident);
+                    });
+                }
+            });
+
+            batch.commit() // Ejecutar todas las operaciones en el lote
+                .then(() => {
+                    console.log('Condominios y residentes agregados o actualizados correctamente');
+                    mostrarCondominios(); // Actualizar la lista de condominios
+                })
+                .catch((error) => {
+                    console.error('Error agregando o actualizando condominios:', error);
+                });
+        } else {
+            console.log('No hay usuario autenticado o los datos del QR no son válidos');
+        }
+    } catch (error) {
+        console.error('Error procesando el QR escaneado:', error);
+    }
+}
