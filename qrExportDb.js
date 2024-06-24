@@ -1,9 +1,49 @@
-// CONFIGURACIÓN DE LA CÁMARA Y LECTOR DE QR
+// Función para generar un ID único (UUID)
+function generateUniqueId() {
+    return 'xxxx-xxxx-xxxx-xxxx'.replace(/x/g, function() {
+        return (Math.random() * 16 | 0).toString(16);
+    });
+}
+
+function generarCodigoQR() {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        const userId = user.uid;
+
+        // Añadir un nuevo documento a la colección 'condominios' con ID automático
+        const newCondominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc();
+
+        // Obtener el ID generado por Firestore
+        const selectedCondominioId = newCondominioRef.id;
+
+        // Construir el objeto de datos para el código QR
+        const qrData = JSON.stringify({ userId, condominioId: selectedCondominioId });
+
+        // Almacenar los datos del condominio en Firestore
+        newCondominioRef.set({
+            name: 'Nombre del condominio', // Aquí puedes ajustar según tu aplicación
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            // Mostrar el código QR en la interfaz
+            qrcodeContainer.innerHTML = ''; // Limpiar contenido anterior
+            new QRCode(qrcodeContainer, {
+                text: qrData,
+                width: 300,
+                height: 300
+            });
+            console.log('QR generado con ID del condominio:', qrData); // Depuración
+        }).catch((error) => {
+            console.error('Error al almacenar los datos del condominio en Firestore:', error);
+        });
+    } else {
+        console.error('No hay usuario autenticado.');
+    }
+}
+
+
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const startButton = document.getElementById('startButton');
-const qrcodeContainer = document.getElementById('qrcode');
-const listaCondominios = document.getElementById('opciones');
 const context = canvas.getContext('2d');
 let currentStream;
 
@@ -17,7 +57,7 @@ startButton.addEventListener('click', async () => {
         };
         await startCamera(constraints);
     } catch (error) {
-        console.error('Error accessing the camera:', error);
+        console.error('Error al acceder a la cámara:', error);
     }
 });
 
@@ -41,7 +81,7 @@ async function startCamera(constraints) {
 
         // Event listener para detectar códigos QR mientras el video está en reproducción
         video.addEventListener('play', () => {
-            console.log('Video is playing');
+            console.log('El video está reproduciéndose');
             const drawFrame = () => {
                 if (video.paused || video.ended) return;
                 
@@ -49,7 +89,7 @@ async function startCamera(constraints) {
                 const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
                 const code = jsQR(imageData.data, imageData.width, imageData.height);
                 if (code) {
-                    console.log('Found QR code', code.data);
+                    console.log('Código QR encontrado', code.data);
                     // Cerrar la cámara después de encontrar un código QR
                     stopCamera();
                     video.style.display = "none";
@@ -62,7 +102,7 @@ async function startCamera(constraints) {
         });
 
     } catch (error) {
-        console.error('Error accessing the camera:', error);
+        console.error('Error al acceder a la cámara:', error);
     }
 }
 
@@ -74,67 +114,39 @@ function stopCamera() {
     }
 }
 
-function generarCodigoQR() {
-    const selectedCondominioId = listaCondominios.value;
-    if (selectedCondominioId) {
-        const user = firebase.auth().currentUser;
-        if (user) {
-            const userId = user.uid;
-            console.log('Generando código QR para el usuario:', userId);
-            console.log('Condominio seleccionado:', selectedCondominioId);
-            
-            // Construir el objeto de datos para el código QR
-            const qrData = JSON.stringify({ userId, condominioId: selectedCondominioId });
-            
-            // Mostrar el código QR en la interfaz
-            qrcodeContainer.innerHTML = ''; // Limpiar contenido anterior
-            new QRCode(qrcodeContainer, {
-                text: qrData,
-                width: 300,
-                height: 300
-            });
-            
-            console.log('QR generado con ID del condominio:', qrData); // Depuración
-        } else {
-            console.error('No hay usuario autenticado.');
-        }
-    } else {
-        console.error('No se ha seleccionado ningún condominio.');
-    }
-}
-
 function onScanSuccess(decodedText) {
     try {
         const { userId, condominioId } = JSON.parse(decodedText);
         if (userId && condominioId) {
             // Acceder directamente a los datos del condominio en Firestore
-            db.collection('users').doc(userId).collection('condominios').doc(condominioId).get()
-            .then((doc) => {
-                if (doc.exists) {
-                    const condominioData = doc.data();
-                    console.log('Datos del condominio:', condominioData);
-                    // Aquí puedes mostrar los datos en tu aplicación
-                    mostrarDatosCondominio(condominioData);
-                } else {
-                    console.error('No se encontraron datos del condominio con el ID proporcionado.');
-                }
-            })
-            .catch((error) => {
-                console.error('Error obteniendo los datos del condominio:', error);
-            });
+            const condominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioId);
+
+            condominioRef.get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const condominioData = doc.data();
+                        console.log('Datos del condominio:', condominioData);
+                        // Aquí puedes mostrar los datos en tu aplicación
+                        mostrarDatosCondominio(condominioData);
+                    } else {
+                        console.error('No se encontraron datos del condominio con el ID proporcionado.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error al obtener los datos del condominio:', error);
+                });
         } else {
             console.error('El QR escaneado no contiene información válida.');
         }
     } catch (error) {
-        console.error('Error procesando el QR escaneado:', error);
+        console.error('Error al procesar el QR escaneado:', error);
     }
 }
+
 
 function mostrarDatosCondominio(condominioData) {
     // Implementa esta función para mostrar los datos del condominio en tu aplicación
     // Ejemplo: actualizar la interfaz de usuario con los datos del condominio
     console.log('Mostrando datos del condominio:', condominioData);
+    // Aquí puedes actualizar elementos de la UI para mostrar los datos
 }
-
-
-
