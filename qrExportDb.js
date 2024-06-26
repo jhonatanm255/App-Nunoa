@@ -1,3 +1,5 @@
+
+
 // Función para generar un ID único (UUID)
 function generateUniqueId() {
     return 'xxxx-xxxx-xxxx-xxxx'.replace(/x/g, function() {
@@ -9,6 +11,12 @@ function generarCodigoQR() {
     const user = firebase.auth().currentUser;
     if (user) {
         const userId = user.uid;
+        const nombreCondominio = document.getElementById('opciones').value;
+
+        if (!nombreCondominio) {
+            console.error('Por favor ingrese el nombre del condominio.');
+            return;
+        }
 
         // Añadir un nuevo documento a la colección 'condominios' con ID automático
         const newCondominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc();
@@ -21,10 +29,11 @@ function generarCodigoQR() {
 
         // Almacenar los datos del condominio en Firestore
         newCondominioRef.set({
-            name: 'Nombre del condominio', // Aquí puedes ajustar según tu aplicación
+            name: nombreCondominio, // Utilizar el nombre ingresado por el usuario
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             // Mostrar el código QR en la interfaz
+            const qrcodeContainer = document.getElementById('qrcodeContainer');
             qrcodeContainer.innerHTML = ''; // Limpiar contenido anterior
             new QRCode(qrcodeContainer, {
                 text: qrData,
@@ -39,7 +48,6 @@ function generarCodigoQR() {
         console.error('No hay usuario autenticado.');
     }
 }
-
 
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
@@ -125,6 +133,10 @@ function onScanSuccess(decodedText) {
                 .then((doc) => {
                     if (doc.exists) {
                         const condominioData = doc.data();
+                        // Convertir el timestamp de Firestore a una fecha legible
+                        if (condominioData.createdAt) {
+                            condominioData.createdAt = condominioData.createdAt.toDate();
+                        }
                         console.log('Datos del condominio:', condominioData);
                         // Aquí puedes mostrar los datos en tu aplicación
                         mostrarDatosCondominio(condominioData);
@@ -142,7 +154,6 @@ function onScanSuccess(decodedText) {
         console.error('Error al procesar el QR escaneado:', error);
     }
 }
-
 
 function mostrarDatosCondominio(condominioData) {
     // Implementa esta función para mostrar los datos del condominio en tu aplicación
