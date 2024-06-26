@@ -7,6 +7,7 @@ function handleQRScan(decodedText) {
             // Acceder al condominio en la colección del usuario que lo generó
             const condominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioId);
 
+            console.log('Buscando datos del condominio en Firestore...');
             condominioRef.get()
                 .then((doc) => {
                     if (doc.exists) {
@@ -19,6 +20,7 @@ function handleQRScan(decodedText) {
                             const currentUserUid = currentUser.uid;
                             const currentUserCondominiosRef = firebase.firestore().collection('users').doc(currentUserUid).collection('condominios');
 
+                            console.log('Guardando el condominio en la cuenta actual...');
                             // Añadir el condominio al usuario actual
                             currentUserCondominiosRef.doc(condominioId).set(condominioData)
                                 .then(() => {
@@ -26,13 +28,42 @@ function handleQRScan(decodedText) {
 
                                     // Migrar las propiedades
                                     const propiedadesRef = condominioRef.collection('propiedades');
+                                    console.log('Obteniendo propiedades del condominio...');
                                     propiedadesRef.get()
                                         .then((querySnapshot) => {
                                             if (!querySnapshot.empty) {
+                                                console.log('Propiedades encontradas. Migrando...');
                                                 querySnapshot.forEach((propiedadDoc) => {
-                                                    currentUserCondominiosRef.doc(condominioId).collection('propiedades').doc(propiedadDoc.id).set(propiedadDoc.data())
+                                                    const propiedadData = propiedadDoc.data();
+                                                    const newPropiedadRef = currentUserCondominiosRef.doc(condominioId).collection('propiedades').doc(propiedadDoc.id);
+
+                                                    newPropiedadRef.set(propiedadData)
                                                         .then(() => {
-                                                            console.log('Propiedad añadida correctamente:', propiedadDoc.id);
+                                                            console.log('Propiedad migrada correctamente:', propiedadDoc.id);
+
+                                                            // Migrar residentes dentro de cada propiedad
+                                                            const residentesRef = propiedadDoc.ref.collection('residentes');
+                                                            console.log('Obteniendo residentes de la propiedad:', propiedadDoc.id);
+                                                            residentesRef.get()
+                                                                .then((residentsSnapshot) => {
+                                                                    if (!residentsSnapshot.empty) {
+                                                                        console.log('Residentes encontrados. Migrando...');
+                                                                        residentsSnapshot.forEach((residentDoc) => {
+                                                                            newPropiedadRef.collection('residentes').doc(residentDoc.id).set(residentDoc.data())
+                                                                                .then(() => {
+                                                                                    console.log('Residente migrado correctamente:', residentDoc.id);
+                                                                                })
+                                                                                .catch((error) => {
+                                                                                    console.error('Error al migrar residente:', error);
+                                                                                });
+                                                                        });
+                                                                    } else {
+                                                                        console.log('No se encontraron residentes para migrar en la propiedad:', propiedadDoc.id);
+                                                                    }
+                                                                })
+                                                                .catch((error) => {
+                                                                    console.error('Error al obtener los residentes de la propiedad:', error);
+                                                                });
                                                         })
                                                         .catch((error) => {
                                                             console.error('Error al añadir la propiedad:', error);
@@ -70,6 +101,8 @@ function handleQRScan(decodedText) {
     }
 }
 
+
+
 // Función para mostrar los datos del condominio en la interfaz
 function mostrarDatosCondominioEnInterfaz(condominioData) {
     console.log('Mostrando datos del condominio en la interfaz:', condominioData);
@@ -102,66 +135,7 @@ function mostrarDatosCondominioEnInterfaz(condominioData) {
     }
 }
 
-
-
-
-
-
-
-function onScanSuccess(decodedText) {
-    try {
-        const { userId, condominioId } = JSON.parse(decodedText);
-        if (userId && condominioId) {
-            // Acceder directamente a los datos del condominio en Firestore
-            const condominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioId);
-
-            condominioRef.get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        const condominioData = doc.data();
-                        // Convertir el timestamp de Firestore a una fecha legible
-                        if (condominioData.createdAt) {
-                            condominioData.createdAt = condominioData.createdAt.toDate();
-                        }
-
-                        console.log('Datos del condominio:', condominioData);
-
-                        // Obtener el usuario autenticado
-                        const currentUser = firebase.auth().currentUser;
-                        if (currentUser) {
-                            const currentUserId = currentUser.uid;
-
-                            // Añadir el condominio a la cuenta del usuario que escanea
-                            firebase.firestore().collection('users').doc(currentUserId).collection('condominios').add(condominioData)
-                                .then(() => {
-                                    console.log('Condominio añadido correctamente a la cuenta actual.');
-                                    mostrarDatosCondominioEnInterfaz(condominioData);
-                                })
-                                .catch((error) => {
-                                    console.error('Error al añadir el condominio a la cuenta actual:', error);
-                                });
-                        } else {
-                            console.error('No hay usuario autenticado.');
-                        }
-                    } else {
-                        console.error('No se encontraron datos del condominio con el ID proporcionado.');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error al obtener los datos del condominio:', error);
-                });
-        } else {
-            console.error('El QR escaneado no contiene información válida.');
-        }
-    } catch (error) {
-        console.error('Error al procesar el QR escaneado:', error);
-    }
-}
-
-
-
-
-
+// Función para generar un código QR para el condominio
 function generarCodigoQR() {
     const user = firebase.auth().currentUser;
     if (user) {
@@ -232,9 +206,6 @@ function generarCodigoQR() {
         console.error('No hay usuario autenticado.');
     }
 }
-
-
-
 
 // Función para manejar la interfaz y la cámara
 const video = document.getElementById('video');
@@ -310,6 +281,7 @@ function stopCamera() {
     }
 }
 
+// Función para cargar los datos de un condominio seleccionado
 function cargarDatosCondominioSeleccionado(condominioId) {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
@@ -332,4 +304,3 @@ function cargarDatosCondominioSeleccionado(condominioId) {
         console.error('No hay usuario autenticado.');
     }
 }
-
