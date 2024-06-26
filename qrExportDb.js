@@ -22,14 +22,25 @@ function handleQRScan(decodedText) {
                                 .then(() => {
                                     console.log('Condominio añadido correctamente a la cuenta actual.');
 
-                                    // Transferir las subcolecciones como propiedades
-                                    transferirSubcolecciones(userId, currentUserUid, condominioId, 'propiedades')
-                                        .then(() => {
+                                    // Migrar la subcolección 'propiedades'
+                                    const propiedadesRef = condominioRef.collection('propiedades');
+                                    propiedadesRef.get()
+                                        .then((querySnapshot) => {
+                                            querySnapshot.forEach((propiedadDoc) => {
+                                                const propiedadData = propiedadDoc.data();
+                                                currentUserCondominiosRef.doc(condominioId).collection('propiedades').doc(propiedadDoc.id).set(propiedadData)
+                                                    .then(() => {
+                                                        console.log('Propiedad migrada correctamente.');
+                                                    })
+                                                    .catch((error) => {
+                                                        console.error('Error al migrar la propiedad:', error);
+                                                    });
+                                            });
                                             // Mostrar los datos del condominio en la interfaz
                                             mostrarDatosCondominioEnInterfaz(condominioData, currentUserUid, condominioId);
                                         })
                                         .catch((error) => {
-                                            console.error('Error al transferir las subcolecciones:', error);
+                                            console.error('Error al obtener las propiedades:', error);
                                         });
                                 })
                                 .catch((error) => {
@@ -52,6 +63,7 @@ function handleQRScan(decodedText) {
         console.error('Error al procesar el QR escaneado:', error);
     }
 }
+
 
 // Función para transferir las subcolecciones de un condominio
 function transferirSubcolecciones(origUserId, destUserId, condominioId, subcoleccion) {
@@ -80,7 +92,6 @@ function transferirSubcolecciones(origUserId, destUserId, condominioId, subcolec
     });
 }
 
-// Función para mostrar datos del condominio en la interfaz, incluyendo propiedades
 function mostrarDatosCondominioEnInterfaz(condominioData, userId, condominioId) {
     console.log('Mostrando datos del condominio en la interfaz:', condominioData);
     const opcionesSelect = document.getElementById('opciones');
@@ -115,6 +126,7 @@ function mostrarDatosCondominioEnInterfaz(condominioData, userId, condominioId) 
         console.error('Elemento #residentsList no encontrado en el DOM.');
     }
 }
+
 
 
 
