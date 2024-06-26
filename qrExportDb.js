@@ -2,6 +2,7 @@
 function handleQRScan(decodedText) {
     try {
         const { userId, condominioId } = JSON.parse(decodedText);
+        console.log(`Escaneado QR con userId: ${userId}, condominioId: ${condominioId}`);
         if (userId && condominioId) {
             // Acceder al condominio en la colección del usuario que lo generó
             const condominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioId);
@@ -10,6 +11,7 @@ function handleQRScan(decodedText) {
                 .then((doc) => {
                     if (doc.exists) {
                         const condominioData = doc.data();
+                        console.log('Datos del condominio obtenidos:', condominioData);
 
                         // Guardar el condominio en la colección del usuario actual
                         const currentUser = firebase.auth().currentUser;
@@ -22,26 +24,30 @@ function handleQRScan(decodedText) {
                                 .then(() => {
                                     console.log('Condominio añadido correctamente a la cuenta actual.');
 
-                                    // Migrar la subcolección 'propiedades'
+                                    // Migrar las propiedades
                                     const propiedadesRef = condominioRef.collection('propiedades');
                                     propiedadesRef.get()
                                         .then((querySnapshot) => {
-                                            querySnapshot.forEach((propiedadDoc) => {
-                                                const propiedadData = propiedadDoc.data();
-                                                currentUserCondominiosRef.doc(condominioId).collection('propiedades').doc(propiedadDoc.id).set(propiedadData)
-                                                    .then(() => {
-                                                        console.log('Propiedad migrada correctamente.');
-                                                    })
-                                                    .catch((error) => {
-                                                        console.error('Error al migrar la propiedad:', error);
-                                                    });
-                                            });
-                                            // Mostrar los datos del condominio en la interfaz
-                                            mostrarDatosCondominioEnInterfaz(condominioData, currentUserUid, condominioId);
+                                            if (!querySnapshot.empty) {
+                                                querySnapshot.forEach((propiedadDoc) => {
+                                                    currentUserCondominiosRef.doc(condominioId).collection('propiedades').doc(propiedadDoc.id).set(propiedadDoc.data())
+                                                        .then(() => {
+                                                            console.log('Propiedad añadida correctamente:', propiedadDoc.id);
+                                                        })
+                                                        .catch((error) => {
+                                                            console.error('Error al añadir la propiedad:', error);
+                                                        });
+                                                });
+                                            } else {
+                                                console.log('No se encontraron propiedades para migrar.');
+                                            }
                                         })
                                         .catch((error) => {
-                                            console.error('Error al obtener las propiedades:', error);
+                                            console.error('Error al obtener las propiedades del condominio:', error);
                                         });
+
+                                    // Mostrar los datos del condominio en la interfaz
+                                    mostrarDatosCondominioEnInterfaz(condominioData);
                                 })
                                 .catch((error) => {
                                     console.error('Error al añadir el condominio a la cuenta actual:', error);
@@ -64,35 +70,8 @@ function handleQRScan(decodedText) {
     }
 }
 
-
-// Función para transferir las subcolecciones de un condominio
-function transferirSubcolecciones(origUserId, destUserId, condominioId, subcoleccion) {
-    return new Promise((resolve, reject) => {
-        const origSubcoleccionRef = firebase.firestore().collection('users').doc(origUserId).collection('condominios').doc(condominioId).collection(subcoleccion);
-        const destSubcoleccionRef = firebase.firestore().collection('users').doc(destUserId).collection('condominios').doc(condominioId).collection(subcoleccion);
-
-        origSubcoleccionRef.get().then(querySnapshot => {
-            const batch = firebase.firestore().batch();
-            querySnapshot.forEach(doc => {
-                batch.set(destSubcoleccionRef.doc(doc.id), doc.data());
-            });
-            batch.commit()
-                .then(() => {
-                    console.log(`Datos de la subcolección ${subcoleccion} transferidos correctamente.`);
-                    resolve();
-                })
-                .catch((error) => {
-                    console.error(`Error al transferir los datos de la subcolección ${subcoleccion}:`, error);
-                    reject(error);
-                });
-        }).catch((error) => {
-            console.error(`Error al obtener los datos de la subcolección ${subcoleccion} del condominio:`, error);
-            reject(error);
-        });
-    });
-}
-
-function mostrarDatosCondominioEnInterfaz(condominioData, userId, condominioId) {
+// Función para mostrar los datos del condominio en la interfaz
+function mostrarDatosCondominioEnInterfaz(condominioData) {
     console.log('Mostrando datos del condominio en la interfaz:', condominioData);
     const opcionesSelect = document.getElementById('opciones');
     if (!opcionesSelect) {
@@ -110,22 +89,20 @@ function mostrarDatosCondominioEnInterfaz(condominioData, userId, condominioId) 
     const residentsList = document.getElementById('residentsList');
     if (residentsList) {
         residentsList.innerHTML = ''; // Limpiar lista anterior
-        const propiedadesRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioId).collection('propiedades');
-        propiedadesRef.get()
-            .then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = doc.data().name; // Suponiendo que cada propiedad tiene un campo 'name'
-                    residentsList.appendChild(listItem);
-                });
-            })
-            .catch((error) => {
-                console.error('Error al obtener las propiedades del condominio:', error);
+        if (condominioData.datos && condominioData.datos.residents) {
+            const residents = condominioData.datos.residents;
+            residents.forEach(resident => {
+                const listItem = document.createElement('li');
+                listItem.textContent = resident.name; // Suponiendo que cada residente tiene un campo 'name'
+                residentsList.appendChild(listItem);
             });
+        }
     } else {
         console.error('Elemento #residentsList no encontrado en el DOM.');
     }
 }
+
+
 
 
 
