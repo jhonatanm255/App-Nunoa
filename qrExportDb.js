@@ -1,49 +1,60 @@
 
 
-// Función para generar un ID único (UUID)
-function generateUniqueId() {
-    return 'xxxx-xxxx-xxxx-xxxx'.replace(/x/g, function() {
-        return (Math.random() * 16 | 0).toString(16);
-    });
+// Cargar los condominios disponibles en el <select>
+function cargarCondominios() {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        const userId = user.uid;
+        const opcionesSelect = document.getElementById('opciones');
+
+        firebase.firestore().collection('users').doc(userId).collection('condominios').get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = doc.data().name;
+                    opcionesSelect.appendChild(option);
+                });
+            })
+            .catch((error) => {
+                console.error('Error al cargar los condominios:', error);
+            });
+    } else {
+        console.error('No hay usuario autenticado.');
+    }
 }
 
+// Llamar a la función para cargar los condominios al cargar la página
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        cargarCondominios();
+    }
+});
+
+// Función para generar un código QR con el ID del condominio seleccionado
 function generarCodigoQR() {
     const user = firebase.auth().currentUser;
     if (user) {
         const userId = user.uid;
-        const nombreCondominio = document.getElementById('opciones').value;
+        const condominioId = document.getElementById('opciones').value; // ID del condominio seleccionado
 
-        if (!nombreCondominio) {
-            console.error('Por favor ingrese el nombre del condominio.');
+        if (!condominioId) {
+            console.error('Por favor seleccione un condominio.');
             return;
         }
 
-        // Añadir un nuevo documento a la colección 'condominios' con ID automático
-        const newCondominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc();
-
-        // Obtener el ID generado por Firestore
-        const selectedCondominioId = newCondominioRef.id;
-
         // Construir el objeto de datos para el código QR
-        const qrData = JSON.stringify({ userId, condominioId: selectedCondominioId });
+        const qrData = JSON.stringify({ userId, condominioId });
 
-        // Almacenar los datos del condominio en Firestore
-        newCondominioRef.set({
-            name: nombreCondominio, // Utilizar el nombre ingresado por el usuario
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            // Mostrar el código QR en la interfaz
-            const qrcodeContainer = document.getElementById('qrcodeContainer');
-            qrcodeContainer.innerHTML = ''; // Limpiar contenido anterior
-            new QRCode(qrcodeContainer, {
-                text: qrData,
-                width: 300,
-                height: 300
-            });
-            console.log('QR generado con ID del condominio:', qrData); // Depuración
-        }).catch((error) => {
-            console.error('Error al almacenar los datos del condominio en Firestore:', error);
+        // Mostrar el código QR en la interfaz
+        const qrcodeContainer = document.getElementById('qrcodeContainer');
+        qrcodeContainer.innerHTML = ''; // Limpiar contenido anterior
+        new QRCode(qrcodeContainer, {
+            text: qrData,
+            width: 300,
+            height: 300
         });
+        console.log('QR generado con ID del condominio:', qrData); // Depuración
     } else {
         console.error('No hay usuario autenticado.');
     }
@@ -122,6 +133,7 @@ function stopCamera() {
     }
 }
 
+// Función para procesar el QR escaneado y obtener los datos del condominio
 function onScanSuccess(decodedText) {
     try {
         const { userId, condominioId } = JSON.parse(decodedText);
@@ -138,7 +150,7 @@ function onScanSuccess(decodedText) {
                             condominioData.createdAt = condominioData.createdAt.toDate();
                         }
                         console.log('Datos del condominio:', condominioData);
-                        // Aquí puedes mostrar los datos en tu aplicación
+                        // Mostrar los datos del condominio en la interfaz
                         mostrarDatosCondominio(condominioData);
                     } else {
                         console.error('No se encontraron datos del condominio con el ID proporcionado.');
@@ -155,9 +167,9 @@ function onScanSuccess(decodedText) {
     }
 }
 
+// Función para mostrar los datos del condominio en la interfaz
 function mostrarDatosCondominio(condominioData) {
-    // Implementa esta función para mostrar los datos del condominio en tu aplicación
-    // Ejemplo: actualizar la interfaz de usuario con los datos del condominio
+    // Implementar la lógica para mostrar los datos del condominio en la interfaz
     console.log('Mostrando datos del condominio:', condominioData);
-    // Aquí puedes actualizar elementos de la UI para mostrar los datos
+    // Puedes actualizar la interfaz con los datos del condominio aquí
 }
