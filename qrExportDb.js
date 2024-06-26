@@ -31,34 +31,56 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
 
-// Función para generar un código QR con el ID del condominio seleccionado
-function generarCodigoQR() {
+// Función para generar un ID único (UUID)
+function generateUniqueId() {
+    return 'xxxx-xxxx-xxxx-xxxx'.replace(/x/g, function() {
+        return (Math.random() * 16 | 0).toString(16);
+    });
+}
+
+// Función para generar y mostrar el código QR en el dispositivo que genera el QR
+function generarYMostrarCodigoQR() {
     const user = firebase.auth().currentUser;
     if (user) {
         const userId = user.uid;
-        const condominioId = document.getElementById('opciones').value; // ID del condominio seleccionado
+        const nombreCondominio = document.getElementById('opciones').value;
 
-        if (!condominioId) {
-            console.error('Por favor seleccione un condominio.');
+        if (!nombreCondominio) {
+            console.error('Por favor ingrese el nombre del condominio.');
             return;
         }
 
-        // Construir el objeto de datos para el código QR
-        const qrData = JSON.stringify({ userId, condominioId });
+        // Añadir un nuevo documento a la colección 'condominios' con ID automático
+        const newCondominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc();
 
-        // Mostrar el código QR en la interfaz
-        const qrcodeContainer = document.getElementById('qrcodeContainer');
-        qrcodeContainer.innerHTML = ''; // Limpiar contenido anterior
-        new QRCode(qrcodeContainer, {
-            text: qrData,
-            width: 300,
-            height: 300
+        // Obtener el ID generado por Firestore
+        const selectedCondominioId = newCondominioRef.id;
+
+        // Construir el objeto de datos para el código QR
+        const qrData = JSON.stringify({ userId, condominioId: selectedCondominioId });
+
+        // Almacenar los datos del condominio en Firestore
+        newCondominioRef.set({
+            name: nombreCondominio, // Utilizar el nombre ingresado por el usuario
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            // Mostrar el código QR en la interfaz
+            const qrcodeContainer = document.getElementById('qrcodeContainer');
+            qrcodeContainer.innerHTML = ''; // Limpiar contenido anterior
+            new QRCode(qrcodeContainer, {
+                text: qrData,
+                width: 300,
+                height: 300
+            });
+            console.log('QR generado con ID del condominio:', qrData); // Depuración
+        }).catch((error) => {
+            console.error('Error al almacenar los datos del condominio en Firestore:', error);
         });
-        console.log('QR generado con ID del condominio:', qrData); // Depuración
     } else {
         console.error('No hay usuario autenticado.');
     }
 }
+
 
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
@@ -66,7 +88,7 @@ const startButton = document.getElementById('startButton');
 const context = canvas.getContext('2d');
 let currentStream;
 
-// Event listener para iniciar la cámara
+// Event listener para iniciar la cámara y escanear el QR
 startButton.addEventListener('click', async () => {
     try {
         const constraints = {
@@ -133,7 +155,7 @@ function stopCamera() {
     }
 }
 
-// Función para procesar el QR escaneado y obtener los datos del condominio
+// Función para manejar el éxito al escanear el QR
 function onScanSuccess(decodedText) {
     try {
         const { userId, condominioId } = JSON.parse(decodedText);
@@ -145,13 +167,9 @@ function onScanSuccess(decodedText) {
                 .then((doc) => {
                     if (doc.exists) {
                         const condominioData = doc.data();
-                        // Convertir el timestamp de Firestore a una fecha legible
-                        if (condominioData.createdAt) {
-                            condominioData.createdAt = condominioData.createdAt.toDate();
-                        }
                         console.log('Datos del condominio:', condominioData);
-                        // Mostrar los datos del condominio en la interfaz
-                        mostrarDatosCondominio(condominioData);
+                        // Aquí puedes manejar los datos obtenidos del condominio en el dispositivo destino
+                        almacenarCondominioEnDispositivoActual(condominioData);
                     } else {
                         console.error('No se encontraron datos del condominio con el ID proporcionado.');
                     }
@@ -167,9 +185,44 @@ function onScanSuccess(decodedText) {
     }
 }
 
+// Función para almacenar el condominio en el dispositivo actual (ejemplo)
+function almacenarCondominioEnDispositivoActual(condominioData) {
+    // Aquí puedes implementar la lógica para almacenar los datos en el dispositivo actual
+    // Ejemplo: almacenar en Firestore local, mostrar en la interfaz, etc.
+    console.log('Almacenando condominio en el dispositivo actual:', condominioData);
+    mostrarDatosCondominioEnInterfaz(condominioData);
+}
+
+// Función para mostrar los datos del condominio en la interfaz del dispositivo destino
+function mostrarDatosCondominioEnInterfaz(condominioData) {
+    // Implementa la lógica para mostrar los datos del condominio en la interfaz
+    // Por ejemplo, actualizar elementos HTML con los datos recibidos
+    console.log('Mostrando datos del condominio en la interfaz:', condominioData);
+    // Actualiza la interfaz según tus necesidades
+    const opcionesSelect = document.getElementById('opciones');
+
+    // Limpiar opciones anteriores si las hay
+    opcionesSelect.innerHTML = '';
+
+    // Crear una nueva opción con el nombre del condominio
+    const option = document.createElement('option');
+    option.value = condominioData.name;
+    option.textContent = condominioData.name;
+
+    // Agregar la opción al select
+    opcionesSelect.appendChild(option);
+}
+
+
 // Función para mostrar los datos del condominio en la interfaz
 function mostrarDatosCondominio(condominioData) {
     // Implementar la lógica para mostrar los datos del condominio en la interfaz
     console.log('Mostrando datos del condominio:', condominioData);
     // Puedes actualizar la interfaz con los datos del condominio aquí
 }
+
+
+
+
+
+
