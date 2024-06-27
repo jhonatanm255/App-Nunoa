@@ -1,9 +1,9 @@
 // Función para manejar el escaneo del QR
 function handleQRScan(decodedText) {
     try {
-        const { userId, condominioId } = JSON.parse(decodedText);
-        console.log(`Escaneado QR con userId: ${userId}, condominioId: ${condominioId}`);
-        if (userId && condominioId) {
+        const { userId, condominioId, nombreCondominio } = JSON.parse(decodedText);
+        console.log(`Escaneado QR con userId: ${userId}, condominioId: ${condominioId}, nombreCondominio: ${nombreCondominio}`);
+        if (userId && condominioId && nombreCondominio) {
             // Acceder al condominio en la colección del usuario que lo generó
             const condominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioId);
 
@@ -12,6 +12,8 @@ function handleQRScan(decodedText) {
                 .then((doc) => {
                     if (doc.exists) {
                         const condominioData = doc.data();
+                        const propiedadesRef = condominioRef.collection('propiedades');
+
                         console.log('Datos del condominio obtenidos:', condominioData);
 
                         // Guardar el condominio en la colección del usuario actual
@@ -27,7 +29,6 @@ function handleQRScan(decodedText) {
                                     console.log('Condominio añadido correctamente a la cuenta actual.');
 
                                     // Migrar las propiedades
-                                    const propiedadesRef = condominioRef.collection('propiedades');
                                     console.log('Obteniendo propiedades del condominio...');
                                     propiedadesRef.get()
                                         .then((querySnapshot) => {
@@ -101,8 +102,6 @@ function handleQRScan(decodedText) {
     }
 }
 
-
-
 // Función para mostrar los datos del condominio en la interfaz
 function mostrarDatosCondominioEnInterfaz(condominioData) {
     console.log('Mostrando datos del condominio en la interfaz:', condominioData);
@@ -155,7 +154,7 @@ function generarCodigoQR() {
                 if (!snapshot.empty) {
                     const existingCondominioId = snapshot.docs[0].id;
                     console.error('El condominio ya existe. Generando QR con el ID existente.');
-                    const qrData = JSON.stringify({ userId, condominioId: existingCondominioId });
+                    const qrData = JSON.stringify({ userId, condominioId: existingCondominioId, nombreCondominio });
 
                     // Mostrar el código QR en la interfaz
                     const qrcodeContainer = document.getElementById('qrcodeContainer');
@@ -175,14 +174,13 @@ function generarCodigoQR() {
                 const selectedCondominioId = newCondominioRef.id;
 
                 // Construir el objeto de datos para el código QR
-                const qrData = JSON.stringify({ userId, condominioId: selectedCondominioId });
+                const qrData = JSON.stringify({ userId, condominioId: selectedCondominioId, nombreCondominio });
 
                 // Almacenar los datos del condominio en Firestore
                 newCondominioRef.set({
                     name: nombreCondominio,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     datos: {
-                        // Incluye aquí todos los datos que quieras copiar
                         residents: [] // Ejemplo de estructura de datos
                     }
                 }).then(() => {
@@ -304,3 +302,4 @@ function cargarDatosCondominioSeleccionado(condominioId) {
         console.error('No hay usuario autenticado.');
     }
 }
+
