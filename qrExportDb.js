@@ -3,48 +3,33 @@ function handleQRScan(decodedText) {
         const { userId, condominioId } = JSON.parse(decodedText);
         console.log(`Escaneado QR con userId: ${userId}, condominioId: ${condominioId}`);
         if (userId && condominioId) {
-            const sourceCondominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioId);
+            // Acceder al condominio en la colección del usuario que lo generó
+            const condominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioId);
 
             console.log('Buscando datos del condominio en Firestore...');
-            sourceCondominioRef.get()
+            condominioRef.get()
                 .then((doc) => {
                     if (doc.exists) {
                         const condominioData = doc.data();
                         console.log('Datos del condominio obtenidos:', condominioData);
 
+                        // Guardar el condominio en la colección del usuario actual
                         const currentUser = firebase.auth().currentUser;
                         if (currentUser) {
                             const currentUserUid = currentUser.uid;
                             const currentUserCondominiosRef = firebase.firestore().collection('users').doc(currentUserUid).collection('condominios');
 
                             console.log('Guardando el condominio en la cuenta actual...');
+                            // Añadir el condominio al usuario actual
                             currentUserCondominiosRef.doc(condominioId).set(condominioData)
                                 .then(() => {
                                     console.log('Condominio añadido correctamente a la cuenta actual.');
 
-                                    const sourceCondominioNameRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioData.name);
-                                    const targetCondominioNameRef = firebase.firestore().collection('users').doc(currentUserUid).collection('condominios').doc(condominioData.name);
+                                    // Migrar todas las propiedades y residentes del condominio
+                                    migrarPropiedadesYResidentes(condominioRef, currentUserCondominiosRef.doc(condominioId));
 
-                                    sourceCondominioNameRef.get()
-                                        .then((nameDoc) => {
-                                            if (nameDoc.exists) {
-                                                const condominioNameData = nameDoc.data();
-                                                targetCondominioNameRef.set(condominioNameData)
-                                                    .then(() => {
-                                                        console.log('Documento del nombre del condominio migrado correctamente.');
-                                                        migrarPropiedadesYResidentes(sourceCondominioNameRef, targetCondominioNameRef);
-                                                        mostrarDatosCondominioEnInterfaz(condominioData);
-                                                    })
-                                                    .catch((error) => {
-                                                        console.error('Error al migrar el documento del nombre del condominio:', error);
-                                                    });
-                                            } else {
-                                                console.error('No se encontró el documento del nombre del condominio.');
-                                            }
-                                        })
-                                        .catch((error) => {
-                                            console.error('Error al obtener el documento del nombre del condominio:', error);
-                                        });
+                                    // Mostrar los datos del condominio en la interfaz
+                                    mostrarDatosCondominioEnInterfaz(condominioData);
                                 })
                                 .catch((error) => {
                                     console.error('Error al añadir el condominio a la cuenta actual:', error);
@@ -68,6 +53,7 @@ function handleQRScan(decodedText) {
 }
 
 function migrarPropiedadesYResidentes(sourceCondominioRef, targetCondominioRef) {
+    // Obtener referencia a la colección de propiedades del condominio fuente
     const propiedadesRef = sourceCondominioRef.collection('propiedades');
 
     console.log('Obteniendo propiedades del condominio...');
@@ -81,16 +67,24 @@ function migrarPropiedadesYResidentes(sourceCondominioRef, targetCondominioRef) 
                     const propiedadData = propiedadDoc.data();
                     const newPropiedadRef = targetCondominioRef.collection('propiedades').doc(propiedadDoc.id);
 
+                    // Añadir la propiedad al lote de escritura
                     batch.set(newPropiedadRef, propiedadData);
 
+                    // Obtener referencia a la colección de residentes de la propiedad fuente
                     const residentesRef = propiedadDoc.ref.collection('residentes');
+
+                    // Obtener referencia a la colección de residentes de la propiedad destino
                     const newResidentesRef = newPropiedadRef.collection('residentes');
 
-                    residentesRef.get()
+                    console.log('Obteniendo residentes de la propiedad:', propiedadDoc.id);
+                    return residentesRef.get()
                         .then((residentsSnapshot) => {
                             if (!residentsSnapshot.empty) {
+                                console.log('Residentes encontrados. Migrando...');
                                 residentsSnapshot.forEach((residentDoc) => {
+                                    // Añadir cada residente al lote de escritura
                                     batch.set(newResidentesRef.doc(residentDoc.id), residentDoc.data());
+                                    console.log('Residente migrado correctamente:', residentDoc.id);
                                 });
                             } else {
                                 console.log('No se encontraron residentes para migrar en la propiedad:', propiedadDoc.id);
@@ -101,7 +95,8 @@ function migrarPropiedadesYResidentes(sourceCondominioRef, targetCondominioRef) 
                         });
                 });
 
-                batch.commit()
+                // Ejecutar el lote de escritura
+                return batch.commit()
                     .then(() => {
                         console.log('Migración completa de propiedades y residentes.');
                     })
@@ -117,8 +112,7 @@ function migrarPropiedadesYResidentes(sourceCondominioRef, targetCondominioRef) 
         });
 }
 
-
-
+// Función para mostrar los datos del condominio en la interfaz
 function mostrarDatosCondominioEnInterfaz(condominioData) {
     console.log('Mostrando datos del condominio en la interfaz:', condominioData);
     const opcionesSelect = document.getElementById('opciones');
@@ -127,19 +121,21 @@ function mostrarDatosCondominioEnInterfaz(condominioData) {
         return;
     }
 
+    // Añadir una nueva opción al select con los datos del condominio
     const option = document.createElement('option');
     option.value = condominioData.name;
     option.textContent = condominioData.name;
     opcionesSelect.appendChild(option);
 
+    // Actualizar la interfaz con los datos del condominio
     const residentsList = document.getElementById('residentsList');
     if (residentsList) {
-        residentsList.innerHTML = ''; 
+        residentsList.innerHTML = ''; // Limpiar lista anterior
         if (condominioData.datos && condominioData.datos.residents) {
             const residents = condominioData.datos.residents;
             residents.forEach(resident => {
                 const listItem = document.createElement('li');
-                listItem.textContent = resident.name;
+                listItem.textContent = resident.name; // Suponiendo que cada residente tiene un campo 'name'
                 residentsList.appendChild(listItem);
             });
         }
@@ -148,6 +144,7 @@ function mostrarDatosCondominioEnInterfaz(condominioData) {
     }
 }
 
+// Función para generar un código QR para el condominio
 function generarCodigoQR() {
     const user = firebase.auth().currentUser;
     if (user) {
@@ -161,6 +158,7 @@ function generarCodigoQR() {
 
         const condominiosRef = firebase.firestore().collection('users').doc(userId).collection('condominios');
 
+        // Verificar si el condominio ya existe
         condominiosRef.where('name', '==', nombreCondominio).get()
             .then(snapshot => {
                 if (!snapshot.empty) {
@@ -168,6 +166,7 @@ function generarCodigoQR() {
                     console.error('El condominio ya existe. Generando QR con el ID existente.');
                     const qrData = JSON.stringify({ userId, condominioId: existingCondominioId });
 
+                    // Mostrar el código QR en la interfaz
                     const qrcodeContainer = document.getElementById('qrcodeContainer');
                     qrcodeContainer.innerHTML = '';
                     new QRCode(qrcodeContainer, {
@@ -178,18 +177,25 @@ function generarCodigoQR() {
                     return;
                 }
 
+                // Añadir un nuevo documento a la colección 'condominios' con ID automático
                 const newCondominioRef = condominiosRef.doc();
+
+                // Obtener el ID generado por Firestore
                 const selectedCondominioId = newCondominioRef.id;
 
+                // Construir el objeto de datos para el código QR
                 const qrData = JSON.stringify({ userId, condominioId: selectedCondominioId });
 
+                // Almacenar los datos del condominio en Firestore
                 newCondominioRef.set({
                     name: nombreCondominio,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     datos: {
-                        residents: []
+                        // Incluye aquí todos los datos que quieras copiar
+                        residents: [] // Ejemplo de estructura de datos
                     }
                 }).then(() => {
+                    // Mostrar el código QR en la interfaz
                     const qrcodeContainer = document.getElementById('qrcodeContainer');
                     qrcodeContainer.innerHTML = '';
                     new QRCode(qrcodeContainer, {
@@ -210,17 +216,19 @@ function generarCodigoQR() {
     }
 }
 
+// Función para manejar la interfaz y la cámara
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const startButton = document.getElementById('startButton');
 const context = canvas.getContext('2d');
 let currentStream;
 
+// Event listener para iniciar la cámara
 startButton.addEventListener('click', async () => {
     try {
         const constraints = {
             video: {
-                facingMode: 'environment'
+                facingMode: 'environment' // Configurar por defecto la cámara trasera
             }
         };
         await startCamera(constraints);
@@ -228,41 +236,6 @@ startButton.addEventListener('click', async () => {
         console.error('Error al acceder a la cámara:', error);
     }
 });
-
-async function startCamera(constraints) {
-    try {
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => track.stop());
-        }
-
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        currentStream = stream;
-
-        video.srcObject = stream;
-        video.play();
-        video.style.display = "block";
-        canvas.style.display = "none";
-
-        video.addEventListener('play', () => {
-            console.log('El video está reproduciéndose');
-            const drawFrame = () => {
-                if (video.paused || video.ended) {
-                    return;
-                }
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                requestAnimationFrame(drawFrame);
-            };
-            requestAnimationFrame(drawFrame);
-        });
-
-        video.addEventListener('canplay', () => {
-            console.log('La cámara está lista para usarse');
-            video.play();
-        });
-    } catch (error) {
-        console.error('Error al iniciar la cámara:', error);
-    }
-}
 
 // Función para iniciar la cámara con las restricciones dadas
 async function startCamera(constraints) {
