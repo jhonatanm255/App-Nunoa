@@ -33,6 +33,8 @@ function handleQRScan(decodedText) {
                                                 const namedCondominioData = namedCondominioDoc.data();
                                                 const namedCondominioId = namedCondominioDoc.id;
 
+                                                console.log('Documento con el nombre del condominio encontrado:', namedCondominioId, namedCondominioData);
+
                                                 // Guardar el documento con el nombre del condominio
                                                 currentUserCondominiosRef.doc(namedCondominioId).set(namedCondominioData)
                                                     .then(() => {
@@ -40,47 +42,51 @@ function handleQRScan(decodedText) {
 
                                                         // Migrar las propiedades
                                                         const propiedadesRef = userCondominiosRef.doc(namedCondominioId).collection('propiedades');
-                                                        console.log('Obteniendo propiedades del condominio...');
+                                                        console.log('Obteniendo propiedades del condominio de:', namedCondominioId);
                                                         propiedadesRef.get()
                                                             .then((querySnapshot) => {
+                                                                console.log('Cantidad de documentos en propiedades:', querySnapshot.size);
                                                                 if (!querySnapshot.empty) {
                                                                     console.log('Propiedades encontradas. Migrando...');
+                                                                    const migrations = [];
                                                                     querySnapshot.forEach((propiedadDoc) => {
                                                                         const propiedadData = propiedadDoc.data();
                                                                         const newPropiedadRef = currentUserCondominiosRef.doc(namedCondominioId).collection('propiedades').doc(propiedadDoc.id);
 
-                                                                        newPropiedadRef.set(propiedadData)
-                                                                            .then(() => {
-                                                                                console.log('Propiedad migrada correctamente:', propiedadDoc.id);
+                                                                        migrations.push(
+                                                                            newPropiedadRef.set(propiedadData)
+                                                                                .then(() => {
+                                                                                    console.log('Propiedad migrada correctamente:', propiedadDoc.id);
 
-                                                                                // Migrar residentes dentro de cada propiedad
-                                                                                const residentesRef = propiedadDoc.ref.collection('residentes');
-                                                                                console.log('Obteniendo residentes de la propiedad:', propiedadDoc.id);
-                                                                                residentesRef.get()
-                                                                                    .then((residentsSnapshot) => {
-                                                                                        if (!residentsSnapshot.empty) {
-                                                                                            console.log('Residentes encontrados. Migrando...');
+                                                                                    // Migrar residentes dentro de cada propiedad
+                                                                                    const residentesRef = propiedadDoc.ref.collection('residentes');
+                                                                                    return residentesRef.get()
+                                                                                        .then((residentsSnapshot) => {
+                                                                                            const residentMigrations = [];
                                                                                             residentsSnapshot.forEach((residentDoc) => {
-                                                                                                newPropiedadRef.collection('residentes').doc(residentDoc.id).set(residentDoc.data())
-                                                                                                    .then(() => {
-                                                                                                        console.log('Residente migrado correctamente:', residentDoc.id);
-                                                                                                    })
-                                                                                                    .catch((error) => {
-                                                                                                        console.error('Error al migrar residente:', error);
-                                                                                                    });
+                                                                                                const newResidenteRef = newPropiedadRef.collection('residentes').doc(residentDoc.id);
+                                                                                                residentMigrations.push(
+                                                                                                    newResidenteRef.set(residentDoc.data())
+                                                                                                        .then(() => {
+                                                                                                            console.log('Residente migrado correctamente:', residentDoc.id);
+                                                                                                        })
+                                                                                                        .catch((error) => {
+                                                                                                            console.error('Error al migrar residente:', error);
+                                                                                                        })
+                                                                                                );
                                                                                             });
-                                                                                        } else {
-                                                                                            console.log('No se encontraron residentes para migrar en la propiedad:', propiedadDoc.id);
-                                                                                        }
-                                                                                    })
-                                                                                    .catch((error) => {
-                                                                                        console.error('Error al obtener los residentes de la propiedad:', error);
-                                                                                    });
-                                                                            })
-                                                                            .catch((error) => {
-                                                                                console.error('Error al añadir la propiedad:', error);
-                                                                            });
+                                                                                            return Promise.all(residentMigrations);
+                                                                                        })
+                                                                                        .catch((error) => {
+                                                                                            console.error('Error al obtener los residentes de la propiedad:', error);
+                                                                                        });
+                                                                                })
+                                                                                .catch((error) => {
+                                                                                    console.error('Error al añadir la propiedad:', error);
+                                                                                })
+                                                                        );
                                                                     });
+                                                                    return Promise.all(migrations);
                                                                 } else {
                                                                     console.log('No se encontraron propiedades para migrar.');
                                                                 }
@@ -88,9 +94,6 @@ function handleQRScan(decodedText) {
                                                             .catch((error) => {
                                                                 console.error('Error al obtener las propiedades del condominio:', error);
                                                             });
-
-                                                        // Mostrar los datos del condominio en la interfaz
-                                                        mostrarDatosCondominioEnInterfaz(condominioData);
                                                     })
                                                     .catch((error) => {
                                                         console.error('Error al añadir el documento con el nombre del condominio a la cuenta actual:', error);
@@ -127,6 +130,9 @@ function handleQRScan(decodedText) {
 
 
 
+
+
+
 // Función para mostrar los datos del condominio en la interfaz
 function mostrarDatosCondominioEnInterfaz(condominioData) {
     console.log('Mostrando datos del condominio en la interfaz:', condominioData);
@@ -159,7 +165,6 @@ function mostrarDatosCondominioEnInterfaz(condominioData) {
     }
 }
 
-// Función para generar un código QR para el condominio
 function generarCodigoQR() {
     const user = firebase.auth().currentUser;
     if (user) {
@@ -179,16 +184,29 @@ function generarCodigoQR() {
                 if (!snapshot.empty) {
                     const existingCondominioId = snapshot.docs[0].id;
                     console.error('El condominio ya existe. Generando QR con el ID existente.');
-                    const qrData = JSON.stringify({ userId, condominioId: existingCondominioId });
 
-                    // Mostrar el código QR en la interfaz
-                    const qrcodeContainer = document.getElementById('qrcodeContainer');
-                    qrcodeContainer.innerHTML = '';
-                    new QRCode(qrcodeContainer, {
-                        text: qrData,
-                        width: 300,
-                        height: 300
+                    // Obtener todos los datos del condominio existente
+                    snapshot.docs.forEach(doc => {
+                        const condominioData = doc.data();
+
+                        // Construir el objeto de datos para el código QR
+                        const qrData = JSON.stringify({
+                            userId,
+                            condominioId: existingCondominioId,
+                            condominioData  // Incluir todos los datos del condominio
+                        });
+
+                        // Mostrar el código QR en la interfaz
+                        const qrcodeContainer = document.getElementById('qrcodeContainer');
+                        qrcodeContainer.innerHTML = '';
+                        new QRCode(qrcodeContainer, {
+                            text: qrData,
+                            width: 300,
+                            height: 300
+                        });
+                        console.log('QR generado con ID del condominio existente:', qrData);
                     });
+
                     return;
                 }
 
@@ -199,14 +217,21 @@ function generarCodigoQR() {
                 const selectedCondominioId = newCondominioRef.id;
 
                 // Construir el objeto de datos para el código QR
-                const qrData = JSON.stringify({ userId, condominioId: selectedCondominioId });
+                const qrData = JSON.stringify({
+                    userId,
+                    condominioId: selectedCondominioId,
+                    name: nombreCondominio,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    datos: {
+                        residents: [] // Ejemplo de estructura de datos
+                    }
+                });
 
                 // Almacenar los datos del condominio en Firestore
                 newCondominioRef.set({
                     name: nombreCondominio,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     datos: {
-                        // Incluye aquí todos los datos que quieras copiar
                         residents: [] // Ejemplo de estructura de datos
                     }
                 }).then(() => {
@@ -218,7 +243,7 @@ function generarCodigoQR() {
                         width: 300,
                         height: 300
                     });
-                    console.log('QR generado con ID del condominio:', qrData);
+                    console.log('QR generado con ID del condominio nuevo:', qrData);
                 }).catch((error) => {
                     console.error('Error al almacenar los datos del condominio en Firestore:', error);
                 });
@@ -230,6 +255,7 @@ function generarCodigoQR() {
         console.error('No hay usuario autenticado.');
     }
 }
+
 
 // Función para manejar la interfaz y la cámara
 const video = document.getElementById('video');
