@@ -1,14 +1,13 @@
-// Función para manejar el escaneo del QR
 function handleQRScan(decodedText) {
     try {
         const { userId, condominioId } = JSON.parse(decodedText);
         console.log(`Escaneado QR con userId: ${userId}, condominioId: ${condominioId}`);
         if (userId && condominioId) {
             // Acceder al condominio en la colección del usuario que lo generó
-            const condominioRef = firebase.firestore().collection('users').doc(userId).collection('condominios').doc(condominioId);
+            const userCondominiosRef = firebase.firestore().collection('users').doc(userId).collection('condominios');
 
             console.log('Buscando datos del condominio en Firestore...');
-            condominioRef.get()
+            userCondominiosRef.doc(condominioId).get()
                 .then((doc) => {
                     if (doc.exists) {
                         const condominioData = doc.data();
@@ -26,59 +25,83 @@ function handleQRScan(decodedText) {
                                 .then(() => {
                                     console.log('Condominio añadido correctamente a la cuenta actual.');
 
-                                    // Migrar las propiedades
-                                    const propiedadesRef = condominioRef.collection('propiedades');
-                                    console.log('Obteniendo propiedades del condominio...');
-                                    propiedadesRef.get()
-                                        .then((querySnapshot) => {
-                                            if (!querySnapshot.empty) {
-                                                console.log('Propiedades encontradas. Migrando...');
-                                                querySnapshot.forEach((propiedadDoc) => {
-                                                    const propiedadData = propiedadDoc.data();
-                                                    const newPropiedadRef = currentUserCondominiosRef.doc(condominioId).collection('propiedades').doc(propiedadDoc.id);
+                                    // Migrar el documento con el nombre del condominio
+                                    userCondominiosRef.where('name', '==', condominioData.name).get()
+                                        .then((snapshot) => {
+                                            if (!snapshot.empty) {
+                                                const namedCondominioDoc = snapshot.docs[0];
+                                                const namedCondominioData = namedCondominioDoc.data();
+                                                const namedCondominioId = namedCondominioDoc.id;
 
-                                                    newPropiedadRef.set(propiedadData)
-                                                        .then(() => {
-                                                            console.log('Propiedad migrada correctamente:', propiedadDoc.id);
+                                                // Guardar el documento con el nombre del condominio
+                                                currentUserCondominiosRef.doc(namedCondominioId).set(namedCondominioData)
+                                                    .then(() => {
+                                                        console.log('Documento con el nombre del condominio añadido correctamente.');
 
-                                                            // Migrar residentes dentro de cada propiedad
-                                                            const residentesRef = propiedadDoc.ref.collection('residentes');
-                                                            console.log('Obteniendo residentes de la propiedad:', propiedadDoc.id);
-                                                            residentesRef.get()
-                                                                .then((residentsSnapshot) => {
-                                                                    if (!residentsSnapshot.empty) {
-                                                                        console.log('Residentes encontrados. Migrando...');
-                                                                        residentsSnapshot.forEach((residentDoc) => {
-                                                                            newPropiedadRef.collection('residentes').doc(residentDoc.id).set(residentDoc.data())
-                                                                                .then(() => {
-                                                                                    console.log('Residente migrado correctamente:', residentDoc.id);
-                                                                                })
-                                                                                .catch((error) => {
-                                                                                    console.error('Error al migrar residente:', error);
-                                                                                });
-                                                                        });
-                                                                    } else {
-                                                                        console.log('No se encontraron residentes para migrar en la propiedad:', propiedadDoc.id);
-                                                                    }
-                                                                })
-                                                                .catch((error) => {
-                                                                    console.error('Error al obtener los residentes de la propiedad:', error);
-                                                                });
-                                                        })
-                                                        .catch((error) => {
-                                                            console.error('Error al añadir la propiedad:', error);
-                                                        });
-                                                });
+                                                        // Migrar las propiedades
+                                                        const propiedadesRef = userCondominiosRef.doc(namedCondominioId).collection('propiedades');
+                                                        console.log('Obteniendo propiedades del condominio...');
+                                                        propiedadesRef.get()
+                                                            .then((querySnapshot) => {
+                                                                if (!querySnapshot.empty) {
+                                                                    console.log('Propiedades encontradas. Migrando...');
+                                                                    querySnapshot.forEach((propiedadDoc) => {
+                                                                        const propiedadData = propiedadDoc.data();
+                                                                        const newPropiedadRef = currentUserCondominiosRef.doc(namedCondominioId).collection('propiedades').doc(propiedadDoc.id);
+
+                                                                        newPropiedadRef.set(propiedadData)
+                                                                            .then(() => {
+                                                                                console.log('Propiedad migrada correctamente:', propiedadDoc.id);
+
+                                                                                // Migrar residentes dentro de cada propiedad
+                                                                                const residentesRef = propiedadDoc.ref.collection('residentes');
+                                                                                console.log('Obteniendo residentes de la propiedad:', propiedadDoc.id);
+                                                                                residentesRef.get()
+                                                                                    .then((residentsSnapshot) => {
+                                                                                        if (!residentsSnapshot.empty) {
+                                                                                            console.log('Residentes encontrados. Migrando...');
+                                                                                            residentsSnapshot.forEach((residentDoc) => {
+                                                                                                newPropiedadRef.collection('residentes').doc(residentDoc.id).set(residentDoc.data())
+                                                                                                    .then(() => {
+                                                                                                        console.log('Residente migrado correctamente:', residentDoc.id);
+                                                                                                    })
+                                                                                                    .catch((error) => {
+                                                                                                        console.error('Error al migrar residente:', error);
+                                                                                                    });
+                                                                                            });
+                                                                                        } else {
+                                                                                            console.log('No se encontraron residentes para migrar en la propiedad:', propiedadDoc.id);
+                                                                                        }
+                                                                                    })
+                                                                                    .catch((error) => {
+                                                                                        console.error('Error al obtener los residentes de la propiedad:', error);
+                                                                                    });
+                                                                            })
+                                                                            .catch((error) => {
+                                                                                console.error('Error al añadir la propiedad:', error);
+                                                                            });
+                                                                    });
+                                                                } else {
+                                                                    console.log('No se encontraron propiedades para migrar.');
+                                                                }
+                                                            })
+                                                            .catch((error) => {
+                                                                console.error('Error al obtener las propiedades del condominio:', error);
+                                                            });
+
+                                                        // Mostrar los datos del condominio en la interfaz
+                                                        mostrarDatosCondominioEnInterfaz(condominioData);
+                                                    })
+                                                    .catch((error) => {
+                                                        console.error('Error al añadir el documento con el nombre del condominio a la cuenta actual:', error);
+                                                    });
                                             } else {
-                                                console.log('No se encontraron propiedades para migrar.');
+                                                console.log('No se encontró el documento con el nombre del condominio.');
                                             }
                                         })
                                         .catch((error) => {
-                                            console.error('Error al obtener las propiedades del condominio:', error);
+                                            console.error('Error al obtener el documento con el nombre del condominio:', error);
                                         });
-
-                                    // Mostrar los datos del condominio en la interfaz
-                                    mostrarDatosCondominioEnInterfaz(condominioData);
                                 })
                                 .catch((error) => {
                                     console.error('Error al añadir el condominio a la cuenta actual:', error);
@@ -100,6 +123,7 @@ function handleQRScan(decodedText) {
         console.error('Error al procesar el QR escaneado:', error);
     }
 }
+
 
 
 
