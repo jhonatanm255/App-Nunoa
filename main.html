@@ -38,14 +38,14 @@
             </div>
         </div>
 
-        <div id="residentsList"></div>
+        <!-- <div id="residentsList"></div> -->
 
         <div id="myModal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <h2>Información del Condominio</h2>
-                <div id="condominioNombre"></div>
-                <div id="qrcodeContainer"></div>
+                <div class="nombre" id="condominioNombre"></div>
+                <div class="qr-center" id="qrcodeContainer"></div>
+                <button class="delete">Eliminar Condominio</button>
             </div>
         </div>
   
@@ -72,7 +72,7 @@
             <!-- Contenedor para la tarjeta flotante -->
             <div id="tarjetaFlotante" class="tarjeta-flotante">
                 <div id="resultados"></div>
-                <button onclick="cerrarTarjeta()" class="cerrar-btn">Cerrar</button>
+                <button class="btn-general" onclick="cerrarTarjeta()" class="cerrar-btn">Cerrar</button>
             </div>
             <div id="resultados"></div>
         </div>
@@ -113,7 +113,7 @@
     </div>
     <input type="hidden" id="deptoActual">
 
-    <button id="btnActualizar" class="cerrar-btn act" onclick="actualizarPropiedad()">Actualizar</button>
+    <button class="btn-general" id="btnActualizar" class="cerrar-btn act" onclick="actualizarPropiedad()">Actualizar</button>
 </div>
   
 <!-- Configuración e inicialización de Firebase -->
@@ -140,9 +140,11 @@
 </script>
 
 <!-- Script de tu aplicación -->
- <script src="qrExportDb.js"></script>
+<script src="qrExportDb.js"></script>
 <script src="condominios.js"></script>
 <script src="user.js"></script>
+<script src="btnEliminarCondominio.js"></script>
+<script src="generarQr.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -16,7 +16,7 @@
     <div class="content">
         <div class="nav-bar-user">
             <div class="user">Inicie Sesion</div>
-            <div><button>Registrarse</button></div>
+            <div><button class="btn-general">Registrarse</button></div>
         </div>
         <hr>
         <div class="main">
@@ -26,7 +26,7 @@
         
             <h3 class="space-up"><i class='bx bxs-lock-alt'></i> Clave</h3>
             <input type="password" id="clave" placeholder="Ingrese su Clave" required>
-            <button onclick="iniciarSesion()">Ingresar</button>
+            <button class="btn-general" onclick="iniciarSesion()">Ingresar</button>
 
             <div class="o">
                 <h5>O</h5>
@@ -41,10 +41,10 @@
             <div id="tarjetaFlotante" class="tarjeta-flotante">
                 <div id="resultados"></div>
                 <div class="btn-edit-elim">
-                    <button id="edit" class="edit" onclick="editarPropiedad()">Editar</button>
-                    <button id="elim" class="elim" onclick="eliminarPropiedad()">Borrar</button>
+                    <button class="btn-general" id="edit" class="edit" onclick="editarPropiedad()">Editar</button>
+                    <button class="btn-general" id="elim" class="elim" onclick="eliminarPropiedad()">Borrar</button>
                 </div>                
-                <button onclick="cerrarTarjeta()" class="cerrar-btn">Cerrar</button>
+                <button class="btn-general" onclick="cerrarTarjeta()" class="cerrar-btn">Cerrar</button>
             </div>
 
             <!-- Agregamos un área para mostrar resultados -->
@@ -87,7 +87,7 @@
         <h3>Bodega</h3>
         <input type="text" name="bodegaEdicion" id="bodegaEdicion" required>
     </div>
-    <button id="btnActualizar" class="cerrar-btn act" onclick="actualizarPropiedad()">Actualizar</button>
+    <button class="btn-general" id="btnActualizar" class="cerrar-btn act" onclick="actualizarPropiedad()">Actualizar</button>
 </div>
 
 
