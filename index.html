@@ -15,27 +15,43 @@
 <body>
     <div class="content">
         <div class="nav-bar-user">
-            <div class="user">Inicie Sesion</div>
-            <div><button class="btn-general">Registrarse</button></div>
+            <div class="user">Control Resident</div>
         </div>
         <hr>
         <div class="main">
             <img class="img-logo" src="logo.png" alt="">
             <h3><i class='bx bxs-envelope'></i> Usuario</h3>
-            <div class="slide"><input type="text" id="usuario" placeholder="Ingrese su Usuario" required></div>
+            <div class="slide"><input type="text" id="usuario" placeholder="Ingrese su Usuario" required autocomplete="off"></div>
 
             <div id="loader" style="display: none;">
                 <p>Cargando...</p>
             </div>
         
             <h3 class="space-up"><i class='bx bxs-lock-alt'></i> Clave</h3>
-            <input type="password" id="clave" placeholder="Ingrese su Clave" required>
-            <button class="btn-general" onclick="iniciarSesion()">Ingresar</button>
-
+            <input type="password" id="clave" placeholder="Ingrese su Clave" required autocomplete="off">
+            <div class="botones">
+                <button class="btn-general" onclick="iniciarSesion()">Ingresar</button>
+                <button id="registrar" class="btn-general green">Registrarse</button>
+            </div>
             <div class="o">
                 <h5>O</h5>
             </div>
 
+            <!-- Formulario para registrar usuario con correo y contraseña -->
+            <form class="registerForm" id="registroForm">
+                <div class="head">
+                    <h2>Registrarse</h2>
+                <span id="cerrarFormulario" class="close">&times;</span>
+                </div>
+                <input type="email" id="email" placeholder="Correo electrónico" required autocomplete="off">
+                <input type="password" id="password" placeholder="Contraseña" required autocomplete="off">
+                <input type="text" id="nombre" placeholder="Nombre" required>
+                <input type="text" id="apellido" placeholder="Apellido" required>
+                <input type="file" id="foto" accept="image/*" required>
+                <button type="submit">Registrarse</button>
+              </form>
+              
+              <!-- INICIAR SESION CON GOOGLE -->
             <div onclick="iniciarSesionConGoogle()" class="google-account">
                 <i class='google bx bxl-google'></i><p>Continuar con Google</p>
             </div>
@@ -99,8 +115,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
-
-
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-storage-compat.js"></script>
 
 <script>
   // Tu configuración de Firebase
@@ -119,6 +134,8 @@
 
 <!-- Script de tu aplicación -->
 <script src="user.js"></script>
+<script src="registerUserPass.js"></script>
+<script src="auth.js"></script>
 <script src="app.js"></script>
 
 </body>

@@ -440,4 +440,62 @@ select {
   background-color: #800101;
 }
 
+.registerForm {
+  display: none;
+}
+
+/* Estilos para el formulario de registro */
+.registerForm {
+  position: absolute;
+  top: 42.5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  border: solid 1px #ccc;
+}
+
+.registerForm h2 {
+  margin-bottom: 10px;
+}
+
+.registerForm button {
+  background-color: #006ec9;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.registerForm button:hover {
+  background-color: #2428ff;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+}
+
+.green {
+  background-color: #008d3d;
+}
+
+.botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.user {
+  font-size: 28px;
+  margin: auto;
+}
+
 
