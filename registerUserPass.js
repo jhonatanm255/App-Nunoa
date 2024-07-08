@@ -78,23 +78,22 @@ function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
                             apellido: apellido,
                             createdAt: firebase.firestore.FieldValue.serverTimestamp()
                         }).then(() => {
-                            // Guardar datos del usuario en localStorage
-                            localStorage.setItem('user', JSON.stringify({
-                                uid: user.uid,
-                                displayName: user.displayName,
-                                email: user.email,
-                                photoURL: user.photoURL
-                            }));
-
-                            // Cerrar el formulario de registro
-                            const formularioRegistro = document.getElementById('registroForm');
-                            formularioRegistro.style.display = 'none';
-
-                            // Redireccionar al usuario
-                            window.location.href = "main.html";
+                            // Enviar correo de verificación
+                            return user.sendEmailVerification();
+                        }).then(() => {
+                            console.log("Correo de verificación enviado a", user.email);
+                            // Cerrar sesión para evitar que el usuario acceda sin verificar el correo
+                            return auth.signOut();
                         });
                     });
                 });
+        })
+        .then(() => {
+            console.log("Información del usuario guardada en Firestore.");
+            const formularioRegistro = document.getElementById('registroForm');
+            formularioRegistro.style.display = 'none';
+            alert('Registro exitoso. Por favor, verifica tu correo electrónico antes de iniciar sesión.');
+            window.location.href = "index.html";
         })
         .catch((error) => {
             const errorMessage = document.getElementById('error-message');
@@ -109,26 +108,30 @@ function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
         });
 }
 
-// Función para iniciar sesión
 function iniciarSesion() {
     const email = document.getElementById('usuario').value;
     const password = document.getElementById('clave').value;
 
     auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            // Iniciar sesión exitosa
             const user = userCredential.user;
-            console.log("Usuario inició sesión:", user);
 
-            // Guardar datos del usuario en localStorage
-            localStorage.setItem('user', JSON.stringify({
-                uid: user.uid,
-                displayName: user.displayName,
-                email: user.email,
-                photoURL: user.photoURL
-            }));
+            if (user.emailVerified) {
+                console.log("Usuario inició sesión:", user);
 
-            window.location.href = "main.html";
+                // Guardar datos del usuario en localStorage
+                localStorage.setItem('user', JSON.stringify({
+                    uid: user.uid,
+                    displayName: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL
+                }));
+
+                window.location.href = "main.html";
+            } else {
+                auth.signOut();
+                alert('Por favor, verifica tu correo electrónico antes de iniciar sesión.');
+            }
         })
         .catch((error) => {
             const errorMessage = document.getElementById('error-message');
