@@ -4,6 +4,13 @@ const btnRegistro = document.getElementById('registrar');
 btnRegistro.addEventListener('click', () => {
     const formularioRegistro = document.getElementById('registroForm');
     formularioRegistro.style.display = 'block';
+
+    const btnClose = document.getElementById('cerrarFormulario');
+    btnClose.addEventListener('click', () => {
+        formularioRegistro.style.display = 'none';
+    });
+
+   
 });
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -141,3 +148,4 @@ function iniciarSesion() {
             console.error("Error en el inicio de sesión:", error);
         });
 }
+

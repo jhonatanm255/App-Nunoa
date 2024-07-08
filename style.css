@@ -462,7 +462,7 @@ select {
 }
 
 .registerForm h2 {
-  margin-bottom: 10px;
+  margin: auto;
 }
 
 .registerForm button {
@@ -482,6 +482,7 @@ select {
 .head {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 30px;
 }
 
 .green {
