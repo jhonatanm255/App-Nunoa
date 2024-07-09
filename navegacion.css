@@ -1,0 +1,30 @@
+
+/* NAVEGACION INFERIOR */
+.nav{
+    display: flex;
+    list-style-type: none;
+    justify-content: space-between;
+    margin-top: 20px;
+    background-color: #b22222;
+    color: aliceblue;
+    padding: 15px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 12px rgba(44, 44, 44, .8);
+}
+
+.user-info {
+    display: flex;
+  }
+  
+#user-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover; 
+    margin-right: 10px;
+}
+  
+#nombreUsuario {
+    display: flex;
+    align-items: center;
+}

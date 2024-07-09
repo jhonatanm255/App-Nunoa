@@ -27,7 +27,7 @@
         <div class="condominio">
             <div class="menu-condominios">
                 <div class="custom-select">
-                    <span onclick="generarCodigoQR()" class="icon"><i class='icon-qr bx bx-qr'></i></span>
+                    <span onclick="generarCodigoQR()"><i class='icon icon-qr bx bx-qr'></i></span>
                     <select id="opciones" onchange="cargarDatosCondominioSeleccionado(this.value)"></select>
                 </div>
             </div>
@@ -53,7 +53,9 @@
          <canvas id="canvas" width="300" height="300" style="display:none;"></canvas>
          
         <div class="main">
-            <img class="img-logo" src="logo.png" alt="">
+            <!-- <img class="img-logo" src="logo.png" alt=""> -->
+             <!-- <h4 class="title-residentes">Registro de Residentes</h4> -->
+              <br><br><br>
             <h3><i class='bx bxs-user-rectangle'></i> Residentes</h3>
             <div class="slide"><input type="text" id="nombre" required><i id="slide" class='bx bx-down-arrow-alt'></i></div>
             <div class="inputs-ocultos">

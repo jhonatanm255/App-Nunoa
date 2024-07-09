@@ -1,0 +1,13 @@
+.logout a i {
+    font-size: 22px;
+    color: #B22222;
+  }
+
+  .nav-bar-user {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: rgb(230, 230, 230);
+  
+  }
