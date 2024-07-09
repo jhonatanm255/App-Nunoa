@@ -65,7 +65,7 @@ function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
     }
 
     // Validar formato de contraseña
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&.,;:?+=-_])[A-Za-z\d@$!%*?&.,;:?+=-_]{6,}$/;
     if (!passwordRegex.test(password)) {
         Swal.fire({
             title: 'Contraseña insegura',
@@ -85,11 +85,22 @@ function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
                 // El correo electrónico no está en uso, proceder con el registro
                 return firebase.auth().createUserWithEmailAndPassword(email, password);
             }
+            
         })
         .then((userCredential) => {
             if (!userCredential) {
                 return; // Si ya se lanzó un error, no continuar
             }
+
+            // Mostrar indicador de carga
+            Swal.fire({
+                title: 'Registrando Usuario',
+                text: 'Por favor, espera mientras lo registramos...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                Swal.showLoading();
+                }
+            });
             const user = userCredential.user;
             console.log("Usuario registrado:", user);
 

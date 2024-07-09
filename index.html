@@ -20,23 +20,19 @@
 <body>
     <div class="content">
         <div class="nav-bar-user">
-            <div class="user">Control Resident</div>
+            <div class="user">Control de Condominios</div>
         </div>
         <hr>
         <div class="main">
             <img class="img-logo" src="logo.png" alt="">
             <h3><i class='bx bxs-envelope'></i> Usuario</h3>
             <div class="slide"><input type="text" id="usuario" placeholder="Ingrese su Usuario" required autocomplete="off"></div>
-
-            <div id="loader" style="display: none;">
-                <p>Cargando...</p>
-            </div>
         
             <h3 class="space-up"><i class='bx bxs-lock-alt'></i> Clave</h3>
             <input type="password" id="clave" placeholder="Ingrese su Clave" required autocomplete="off">
             <div class="botones">
                 <button class="btn-general" onclick="iniciarSesion()">Ingresar</button>
-                <button id="registrar" class="btn-general green">Registrarse</button>
+                <!-- <button id="registrar" class="btn-general green">Registrarse</button> -->
             </div>
             <div class="o">
                 <h5>O</h5>
@@ -58,10 +54,11 @@
               
               <!-- INICIAR SESION CON GOOGLE -->
             <div onclick="iniciarSesionConGoogle()" class="google-account">
-                <i class='google bx bxl-google'></i><p>Continuar con Google</p>
+                <img src="logo-google.png" alt=""><p>Continuar con Google</p>
             </div>
 
-    
+            <div class="register">No tienes cuenta? <a id="registrar" href="#" ><span>Regístrate</span></a></div>
+
             <!-- Contenedor para la tarjeta flotante -->
             <div id="tarjetaFlotante" class="tarjeta-flotante">
                 <div id="resultados"></div>
@@ -92,28 +89,7 @@
     <span class="material-symbols-outlined check">
         check_circle
         </span><p id="mensajeFlotante"></p></div>
-    
   </div>
-  
-
-<!-- Formulario de edición -->
-<div class="content edicion" id="formularioEdicion" style="display: none;">
-    <div class="main">
-        <img class="img-logo" src="nunoa-logo-bg.png" alt="">
-        <h3>Nombre</h3>
-        <input type="text" id="nombreEdicion" required>
-        <input type="text" id="nombreEdicion2" required>
-        <input type="text" id="nombreEdicion3" required>
-        <input type="text" id="nombreEdicion4" required>
-        <h3>Depto</h3>
-        <input type="text" id="deptoEdicion" required>
-        <h3>Estacionamiento</h3>
-        <input type="text" name="estEdicion" id="estEdicion" required>
-        <h3>Bodega</h3>
-        <input type="text" name="bodegaEdicion" id="bodegaEdicion" required>
-    </div>
-    <button class="btn-general" id="btnActualizar" class="cerrar-btn act" onclick="actualizarPropiedad()">Actualizar</button>
-</div>
 
 
 <!-- Configuración e inicialización de Firebase -->
