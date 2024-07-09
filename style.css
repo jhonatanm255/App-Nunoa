@@ -59,7 +59,7 @@ span{
 /* Estilos para la tarjeta flotante */
 .tarjeta-flotante {
     position: fixed;
-    min-width: 300px;
+    min-width: 350px;
     color: aliceblue;
     top: 50%;
     left: 50%;
@@ -227,6 +227,7 @@ span{
 .icon {
   display: flex;
   align-items: center;
+  margin-right: 5px;
 }
 
 .custom-select {
@@ -243,7 +244,6 @@ span{
 select {
   height: 30px;
   border: none;
-  background: rgb(243, 243, 243);
   outline: none;
 }
 
@@ -324,6 +324,7 @@ select {
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
+  border-radius: 10px;
   width: 100%;
 }
 
