@@ -1,4 +1,3 @@
-
 // Configuración de Firebase
 const firestore = firebase.firestore();
 
@@ -8,8 +7,21 @@ function iniciarSesionConGoogle() {
 
   firebase.auth().signInWithPopup(provider)
     .then((result) => {
+      // Cerrar indicador de carga cuando la autenticación sea exitosa
+      Swal.close();
+
       const user = result.user;
       console.log("Usuario autenticado:", user);
+
+       // Mostrar indicador de carga
+      Swal.fire({
+        title: 'Iniciando sesión con Google',
+        text: 'Por favor, espera mientras iniciamos sesión...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
 
       // Verificar si el usuario ya está en Firestore
       const userRef = firestore.collection('usuarios').doc(user.uid);
@@ -32,7 +44,16 @@ function iniciarSesionConGoogle() {
       window.location.href = "main.html";
     })
     .catch((error) => {
+      // Cerrar indicador de carga en caso de error
+      Swal.close();
       console.error("Error en el inicio de sesión con Google:", error.message);
+      
+      // Mostrar mensaje de error
+      Swal.fire({
+        title: 'Error en el inicio de sesión con Google',
+        text: 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.',
+        icon: 'error',
+      });
     });
 }
 

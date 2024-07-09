@@ -9,8 +9,6 @@ btnRegistro.addEventListener('click', () => {
     btnClose.addEventListener('click', () => {
         formularioRegistro.style.display = 'none';
     });
-
-   
 });
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -46,6 +44,38 @@ document.addEventListener('DOMContentLoaded', (event) => {
 // Función para registrar un usuario
 function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
     console.log("Intentando registrar usuario con email:", email);
+
+    // Validar campos llenos y formato
+    if (!email || !password || !nombre || !apellido) {
+        Swal.fire({
+            title: 'Campos vacíos',
+            text: 'Por favor, completa todos los campos.',
+            icon: 'warning',
+        });
+        return;
+    }
+
+    // Validar formato de correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        Swal.fire({
+            title: 'Correo electrónico inválido',
+            text: 'Por favor, ingresa un correo electrónico válido.',
+            icon: 'warning',
+        });
+        return;
+    }
+
+    // Validar formato de contraseña
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{6,}$/;
+    if (!passwordRegex.test(password)) {
+        Swal.fire({
+            title: 'Contraseña insegura',
+            text: 'La contraseña debe tener al menos 6 caracteres, incluyendo letras, números y al menos un carácter especial.',
+            icon: 'warning',
+        });
+        return;
+    }
 
     firebase.auth().fetchSignInMethodsForEmail(email)
         .then((signInMethods) => {
@@ -85,12 +115,18 @@ function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
                             apellido: apellido,
                             createdAt: firebase.firestore.FieldValue.serverTimestamp()
                         }).then(() => {
+                            // Guardar datos del usuario en localStorage
+                            localStorage.setItem('user', JSON.stringify({
+                                uid: user.uid,
+                                displayName: user.displayName,
+                                email: user.email,
+                                photoURL: user.photoURL
+                            }));
+
                             // Enviar correo de verificación
                             return user.sendEmailVerification();
                         }).then(() => {
                             console.log("Correo de verificación enviado a", user.email);
-                            // Cerrar sesión para evitar que el usuario acceda sin verificar el correo
-                            return auth.signOut();
                         });
                     });
                 });
@@ -99,8 +135,9 @@ function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
             console.log("Información del usuario guardada en Firestore.");
             const formularioRegistro = document.getElementById('registroForm');
             formularioRegistro.style.display = 'none';
-            alert('Registro exitoso. Por favor, verifica tu correo electrónico antes de iniciar sesión.');
-            window.location.href = "index.html";
+            Swal.fire('Registro exitoso', 'Por favor, verifica tu correo electrónico antes de iniciar sesión.', 'success').then(() => {
+                window.location.href = "index.html";
+            });
         })
         .catch((error) => {
             const errorMessage = document.getElementById('error-message');
@@ -111,6 +148,11 @@ function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
                     errorMessage.textContent = `Error en el registro: ${error.message}`;
                 }
             }
+            Swal.fire({
+                title: 'Error en el registro',
+                text: error.message === 'auth/email-already-in-use' ? 'El correo electrónico ya está en uso. Por favor, usa otro correo electrónico.' : `Error en el registro: ${error.message}`,
+                icon: 'error',
+            });
             console.error("Error en el registro:", error);
         });
 }
@@ -118,6 +160,27 @@ function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
 function iniciarSesion() {
     const email = document.getElementById('usuario').value;
     const password = document.getElementById('clave').value;
+
+    // Validar campos llenos y formato
+    if (!email || !password) {
+        Swal.fire({
+            title: 'Campos vacíos',
+            text: 'Por favor, completa todos los campos.',
+            icon: 'warning',
+        });
+        return;
+    }
+
+    // Validar formato de correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        Swal.fire({
+            title: 'Correo electrónico inválido',
+            text: 'Por favor, ingresa un correo electrónico válido.',
+            icon: 'warning',
+        });
+        return;
+    }
 
     auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
@@ -137,15 +200,34 @@ function iniciarSesion() {
                 window.location.href = "main.html";
             } else {
                 auth.signOut();
-                alert('Por favor, verifica tu correo electrónico antes de iniciar sesión.');
+                Swal.fire({
+                    title: 'Correo no verificado',
+                    text: 'Por favor, verifica tu correo electrónico antes de iniciar sesión.',
+                    icon: 'warning',
+                });
             }
         })
         .catch((error) => {
-            const errorMessage = document.getElementById('error-message');
-            if (errorMessage) {
-                errorMessage.textContent = `Error en el inicio de sesión: ${error.message}`;
-            }
             console.error("Error en el inicio de sesión:", error);
+
+            let swalTitle = 'Error en el inicio de sesión';
+            let swalText = 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.';
+
+            if (error.code === 'auth/user-not-found') {
+                swalTitle = 'Usuario no registrado';
+                swalText = 'No se encontró ninguna cuenta con este correo electrónico. Por favor, regístrate primero.';
+            } else if (error.code === 'auth/wrong-password') {
+                swalTitle = 'Contraseña incorrecta';
+                swalText = 'La contraseña ingresada es incorrecta. Por favor, inténtalo nuevamente.';
+            } else if (error.code === 'auth/invalid-email') {
+                swalTitle = 'Correo electrónico inválido';
+                swalText = 'El correo electrónico ingresado no es válido. Por favor, verifica e inténtalo de nuevo.';
+            }
+
+            Swal.fire({
+                title: swalTitle,
+                text: swalText,
+                icon: 'error',
+            });
         });
 }
-
