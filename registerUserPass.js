@@ -21,12 +21,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 });
 
-// Esperar a que el DOM esté completamente cargado
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', () => {
     const registroForm = document.getElementById('registroForm');
 
     if (registroForm) {
-        registroForm.addEventListener('submit', (e) => {
+        registroForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -41,15 +40,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 });
 
-// Función para registrar un usuario
 function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
     console.log("Intentando registrar usuario con email:", email);
 
     // Validar campos llenos y formato
-    if (!email || !password || !nombre || !apellido) {
+    if (!email || !password || !nombre || !apellido || !archivoFoto) {
         Swal.fire({
             title: 'Campos vacíos',
-            text: 'Por favor, completa todos los campos.',
+            text: 'Por favor, completa todos los campos incluyendo la foto de perfil.',
             icon: 'warning',
         });
         return;
@@ -67,7 +65,7 @@ function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
     }
 
     // Validar formato de contraseña
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{6,}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
     if (!passwordRegex.test(password)) {
         Swal.fire({
             title: 'Contraseña insegura',
@@ -156,6 +154,8 @@ function registrarUsuario(email, password, nombre, apellido, archivoFoto) {
             console.error("Error en el registro:", error);
         });
 }
+
+  
 
 function iniciarSesion() {
     const email = document.getElementById('usuario').value;
