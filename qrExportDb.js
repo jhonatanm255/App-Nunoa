@@ -1,6 +1,23 @@
 const handleQRScan = async (data) => {
     try {
-        const { userId, condominioId, condominioData } = JSON.parse(data);
+        // Verificar si 'data' es una cadena JSON válida
+        if (!data) {
+            throw new Error('Los datos del QR están vacíos o no son válidos.');
+        }
+
+        // Intentar parsear el JSON
+        let parsedData;
+        try {
+            parsedData = JSON.parse(data);
+        } catch (e) {
+            throw new Error('Error al parsear los datos del QR: ' + e.message);
+        }
+
+        // Destructurar los datos del JSON parseado
+        const { userId, condominioId, condominioData } = parsedData;
+        if (!userId || !condominioId || !condominioData || !condominioData.name) {
+            throw new Error('El JSON parseado no contiene los campos esperados.');
+        }
         const { name: condominioName } = condominioData;
 
         console.log(`Escaneado QR con userId: ${userId}, condominioId: ${condominioId}, nombre del condominio: ${condominioName}`);
@@ -111,3 +128,35 @@ function mostrarDatosCondominioEnInterfaz(condominioData) {
     }
 }
 
+
+// Función para mostrar los datos del condominio en la interfaz
+function mostrarDatosCondominioEnInterfaz(condominioData) {
+    console.log('Mostrando datos del condominio en la interfaz:', condominioData);
+    const opcionesSelect = document.getElementById('opciones');
+    if (!opcionesSelect) {
+        console.error('Elemento #opciones no encontrado en el DOM.');
+        return;
+    }
+
+    // Añadir una nueva opción al select con los datos del condominio
+    const option = document.createElement('option');
+    option.value = condominioData.name;
+    option.textContent = condominioData.name;
+    opcionesSelect.appendChild(option);
+
+    // Actualizar la interfaz con los datos del condominio
+    const residentsList = document.getElementById('residentsList');
+    if (residentsList) {
+        residentsList.innerHTML = ''; // Limpiar lista anterior
+        if (condominioData.datos && condominioData.datos.residents) {
+            const residents = condominioData.datos.residents;
+            residents.forEach(resident => {
+                const listItem = document.createElement('li');
+                listItem.textContent = resident.name; // Suponiendo que cada residente tiene un campo 'name'
+                residentsList.appendChild(listItem);
+            });
+        }
+    } else {
+        console.error('Elemento #residentsList no encontrado en el DOM.');
+    }
+}
