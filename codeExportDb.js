@@ -70,13 +70,14 @@ const handleDataMigration = async (userId) => {
             .get();
 
         if (condominiosSnapshot.empty) {
-            console.log('No condominiums found for migration.');
+            console.log('No se encontraron condominios para migrar.');
             return;
         }
 
         const batch = firebase.firestore().batch();
 
-        condominiosSnapshot.forEach(async (doc) => {
+        // Iterar sobre cada condominio para copiarlo
+        await Promise.all(condominiosSnapshot.docs.map(async (doc) => {
             const condominioData = doc.data();
             const condominioId = doc.id;
 
@@ -89,33 +90,38 @@ const handleDataMigration = async (userId) => {
 
             batch.set(newCondominioRef, condominioData);
 
-            // Obtener y copiar la subcolección 'propiedades' desde el documento con el nombre del condominio
+            // Obtener y copiar la subcolección 'propiedades' desde el documento original
             const propiedadesSnapshot = await doc.ref.collection('propiedades').get();
 
+            // Guardar cada documento de 'propiedades' en la nueva colección
+            const newPropiedadesRef = newCondominioRef.collection('propiedades');
             propiedadesSnapshot.forEach(propDoc => {
-                const newPropDocRef = newCondominioRef.collection('propiedades').doc(propDoc.id);
-                batch.set(newPropDocRef, propDoc.data());
+                batch.set(newPropiedadesRef.doc(propDoc.id), propDoc.data());
             });
-        });
+        }));
 
         await batch.commit();
-        console.log('Data migrated successfully.');
+        console.log('Datos migrados exitosamente.');
 
         // Actualizar la interfaz con los datos del nuevo condominio copiado
-        const newCondominioData = condominiosSnapshot.docs.map(doc => {
+        const newCondominioData = await Promise.all(condominiosSnapshot.docs.map(async (doc) => {
+            const condominioName = doc.data().name;
+            const propiedadesSnapshot = await doc.ref.collection('propiedades').get();
+            const residents = propiedadesSnapshot.docs.map(doc => doc.data());
             return {
-                name: doc.data().name,
+                name: condominioName,
                 datos: {
-                    residents: doc.ref.collection('propiedades').get().then(snapshot => snapshot.docs.map(doc => doc.data()))
+                    residents: residents
                 }
             };
-        });
+        }));
 
         mostrarDatosCondominioEnInterfaz(newCondominioData);
     } catch (error) {
         console.error('Error:', error.message);
     }
 };
+
 
 
 // MOSTRAR DATOS DEL CONDOMINIO EN LA INTERFAZ
