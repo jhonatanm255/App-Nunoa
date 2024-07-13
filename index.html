@@ -20,19 +20,19 @@
 <body>
     <div class="content">
         <div class="nav-bar-user">
+            <img class="img-logo" src="logo.png" alt="">
             <div class="user">Control de Condominios</div>
         </div>
         <hr>
         <div class="main">
-            <img class="img-logo" src="logo.png" alt="">
+            <h3 class="title-index">Iniciar Sesión</h3>
             <h3><i class='bx bxs-envelope'></i> Usuario</h3>
             <div class="slide"><input type="text" id="usuario" placeholder="Ingrese su Usuario" required autocomplete="off"></div>
         
-            <h3 class="space-up"><i class='bx bxs-lock-alt'></i> Clave</h3>
+            <h3 class="space-up"><i class='bx bxs-lock-alt'></i> Contraseña</h3>
             <input type="password" id="clave" placeholder="Ingrese su Clave" required autocomplete="off">
             <div class="botones">
                 <button class="btn-general" onclick="iniciarSesion()">Ingresar</button>
-                <!-- <button id="registrar" class="btn-general green">Registrarse</button> -->
             </div>
             <div class="o">
                 <h5>O</h5>
@@ -48,8 +48,8 @@
                 <input type="password" id="password" placeholder="Contraseña" required autocomplete="off">
                 <input type="text" id="nombre" placeholder="Nombre" required>
                 <input type="text" id="apellido" placeholder="Apellido" required>
-                <input type="file" id="foto" accept="image/*" required>
-                <button type="submit">Registrarse</button>
+                <input type="file" id="foto" placeholder="Foto de Perfil" accept="image/*" required>
+                <button class="btn-general" type="submit">Registrarse</button>
               </form>
               
               <!-- INICIAR SESION CON GOOGLE -->
