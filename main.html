@@ -46,14 +46,9 @@
                 <span class="close">&times;</span>
                 <div class="nombre" id="condominioNombre"></div>
                 <div class="btn-send-data">
-                    <button id="export"><i class='bx bx-send'></i> Exportar Datos</button>
-                    <button id="import"><i class='bx bx-x'></i> Importar Datos</button>
+                    <button class="btn-general" id="export"> Exportar Datos</button>
+                    <button class="btn-general" id="import"> Importar Datos</button>
                 </div>
-                <div id="container-import" class="active">
-                    <input type="number" id="importCode" placeholder="Enter migration code">
-                    <button onclick="importData()">Import Data</button>
-                </div>
-                
                 
                 <div id="exportCodeContainer" style="display:none;">
                     <p>Export Code: <span id="exportCode"></span></p>
@@ -61,6 +56,12 @@
                 <div class="qr-center" id="qrcodeContainer"></div>
                 <button class="delete">Eliminar Condominio</button>
             </div>
+        </div>
+
+        <div id="container-import" class="active">
+            <input type="number" id="importCode" placeholder="Enter migration code">
+            <span class="close">&times;</span>
+            <button onclick="importData()">Import Data</button>
         </div>
   
         <video id="video" width="300" height="200"></video>

@@ -37,6 +37,15 @@ const btnFormCode = document.getElementById('import');
 btnFormCode.addEventListener('click', () => {
     const importContent = document.getElementById('container-import');
     importContent.style.display = 'block';
+    const myModal = document.getElementById('myModal');
+    myModal.style.display = 'none';
+
+    // Cerrar el Modal al Hacer Clic en el Botón de Cerrar
+    const closeBtn = document.querySelector('#container-import .close');
+    closeBtn.addEventListener('click', () => {
+    const importContent = document.getElementById('container-import');
+    importContent.style.display = 'none';
+});
 });
 
 async function importData() {

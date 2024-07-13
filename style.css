@@ -453,9 +453,22 @@ select {
 }
 
 #container-import {
+  position: absolute;
+  z-index: 100;
+ margin: auto;
+ background-color: rgb(207, 207, 207);
+ padding: 20px;
+}
+
+#container-import {
   display: none;
 }
 
 .active {
   display: block;
+}
+
+.btn-send-data {
+  display: flex;
+  gap: 10px;
 }
