@@ -131,11 +131,19 @@ function leerPropiedades() {
 }
 
 //FUNCION PARA BUSCAR PROPIEDADES
+
+
 function buscarPropiedad() {
   const nombre = document.getElementById('nombre').value.toLowerCase();
   const depto = document.getElementById('depto').value.toLowerCase();
   const estacionamiento = document.getElementById('est').value.toLowerCase();
   const bodega = document.getElementById('bodega').value.toLowerCase();
+
+  // Verificar si todos los campos están vacíos
+  if (nombre === '' && depto === '' && estacionamiento === '' && bodega === '') {
+  swal('Debe rellenar por lo menos un campo', '', 'warning');
+  return;
+  }
 
   const user = firebase.auth().currentUser;
   if (!user) {
