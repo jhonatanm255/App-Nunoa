@@ -45,6 +45,19 @@
             <div class="modal-content">
                 <span class="close">&times;</span>
                 <div class="nombre" id="condominioNombre"></div>
+                <div class="btn-send-data">
+                    <button id="export"><i class='bx bx-send'></i> Exportar Datos</button>
+                    <button id="import"><i class='bx bx-x'></i> Importar Datos</button>
+                </div>
+                <div id="container-import" class="active">
+                    <input type="text" id="importCode" placeholder="Enter migration code">
+                    <button onclick="importData()">Import Data</button>
+                </div>
+                
+                
+                <div id="exportCodeContainer" style="display:none;">
+                    <p>Export Code: <span id="exportCode"></span></p>
+                </div>
                 <div class="qr-center" id="qrcodeContainer"></div>
                 <button class="delete">Eliminar Condominio</button>
             </div>
@@ -147,6 +160,7 @@
 <script src="user.js"></script>
 <script src="btnEliminarCondominio.js"></script>
 <script src="generarQr.js"></script>
+<script src="codeExportDb.js"></script>
 <script src="registerUserPass.js"></script>
 <script src="app.js"></script>
 </body>

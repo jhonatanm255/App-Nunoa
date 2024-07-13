@@ -452,3 +452,10 @@ select {
   text-decoration: none;
 }
 
+#container-import {
+  display: none;
+}
+
+.active {
+  display: block;
+}
