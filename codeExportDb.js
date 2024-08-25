@@ -62,9 +62,11 @@ async function importData() {
 }
 
 // FUNCION DE MIGRACION DE DATOS
+// Función para manejar la migración de datos
 const handleDataMigration = async (userId) => {
     try {
         const currentUser = firebase.auth().currentUser;
+        const batch = firebase.firestore().batch();
 
         // Buscar todos los documentos de los condominios del usuario origen
         const condominiosSnapshot = await firebase.firestore()
@@ -77,8 +79,6 @@ const handleDataMigration = async (userId) => {
             console.log('No se encontraron condominios para migrar.');
             return;
         }
-
-        const batch = firebase.firestore().batch();
 
         // Iterar sobre cada condominio para copiarlo
         await Promise.all(condominiosSnapshot.docs.map(async (doc) => {
@@ -96,11 +96,16 @@ const handleDataMigration = async (userId) => {
 
             // Obtener y copiar la subcolección 'propiedades' desde el documento original
             const propiedadesSnapshot = await doc.ref.collection('propiedades').get();
-
-            // Guardar cada documento de 'propiedades' en la nueva colección
             const newPropiedadesRef = newCondominioRef.collection('propiedades');
             propiedadesSnapshot.forEach(propDoc => {
                 batch.set(newPropiedadesRef.doc(propDoc.id), propDoc.data());
+            });
+
+            // Obtener y copiar la subcolección 'residents' si existe
+            const residentsSnapshot = await doc.ref.collection('residents').get();
+            const newResidentsRef = newCondominioRef.collection('residents');
+            residentsSnapshot.forEach(residentDoc => {
+                batch.set(newResidentsRef.doc(residentDoc.id), residentDoc.data());
             });
         }));
 
@@ -111,7 +116,8 @@ const handleDataMigration = async (userId) => {
         const newCondominioData = await Promise.all(condominiosSnapshot.docs.map(async (doc) => {
             const condominioName = doc.data().name;
             const propiedadesSnapshot = await doc.ref.collection('propiedades').get();
-            const residents = propiedadesSnapshot.docs.map(doc => doc.data());
+            const residentesSnapshot = await doc.ref.collection('residents').get();
+            const residents = residentesSnapshot.docs.map(doc => doc.data());
             return {
                 name: condominioName,
                 datos: {
@@ -122,9 +128,10 @@ const handleDataMigration = async (userId) => {
 
         mostrarDatosCondominioEnInterfaz(newCondominioData);
     } catch (error) {
-        console.error('Error:', error.message);
+        console.error('Error en la migración de datos:', error.message);
     }
 };
+
 
 // MOSTRAR DATOS DEL CONDOMINIO EN LA INTERFAZ
 function mostrarDatosCondominioEnInterfaz(condominios) {
