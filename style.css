@@ -456,8 +456,8 @@ select {
   position: absolute;
   z-index: 100;
  margin: auto;
- background-color: rgb(207, 207, 207);
- padding: 20px;
+ background-color: rgb(230, 230, 230);
+ padding: 30px;
 }
 
 #container-import {
@@ -471,4 +471,31 @@ select {
 .btn-send-data {
   display: flex;
   gap: 10px;
+}
+
+#exportCodeContainer {
+  display: none;
+  position: relative; /* Necesario para posicionar el botón de cierre */
+  width: 300px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-size: 24px;
+}
+
+/* Estilo del botón de cierre */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: red; /* Cambia de color cuando el mouse pasa por encima */
 }

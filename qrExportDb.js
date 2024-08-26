@@ -160,3 +160,10 @@ function mostrarDatosCondominioEnInterfaz(condominioData) {
         console.error('Elemento #residentsList no encontrado en el DOM.');
     }
 }
+
+
+document.getElementById('closeExportCodeContainer').addEventListener('click', function() {
+    document.getElementById('exportCodeContainer').style.display = 'none'; // Ocultar el contenedor
+});
+
+

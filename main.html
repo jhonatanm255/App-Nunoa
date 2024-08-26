@@ -51,6 +51,7 @@
                 </div>
                 
                 <div id="exportCodeContainer" style="display:none;">
+                    <span id="closeExportCodeContainer" class="close-btn">&times;</span>
                     <p>Export Code: <span id="exportCode"></span></p>
                 </div>
                 <div class="qr-center" id="qrcodeContainer"></div>
@@ -59,8 +60,8 @@
         </div>
 
         <div id="container-import" class="active">
-            <input type="number" id="importCode" placeholder="Enter migration code">
             <span class="close">&times;</span>
+            <input type="number" id="importCode" placeholder="Ingrese el código">
             <button onclick="importData()">Import Data</button>
         </div>
   
