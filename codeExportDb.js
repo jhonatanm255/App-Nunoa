@@ -5,9 +5,9 @@ const exportCodeSpan = document.getElementById('exportCode');
 
 btnGenerateCode.addEventListener('click', async () => {
     try {
-        const exportCode = generateRandomNumericCode(4); 
-        exportCodeSpan.textContent = exportCode; 
-        exportCodeContainer.style.display = 'block'; 
+        const exportCode = generateRandomNumericCode(4); // Generar código numérico de 4 dígitos
+        exportCodeSpan.textContent = exportCode; // Mostrar el código generado en el span
+        exportCodeContainer.style.display = 'block'; // Mostrar el contenedor
         console.log('Export code generated:', exportCode);
         exportCodeContainer.innerText = exportCode;
 
@@ -45,7 +45,7 @@ btnFormCode.addEventListener('click', () => {
     closeBtn.addEventListener('click', () => {
     const importContent = document.getElementById('container-import');
     importContent.style.display = 'none';
-    });
+});
 });
 
 async function importData() {
@@ -56,6 +56,7 @@ async function importData() {
         console.log('Invalid code');
         return;
     }
+
     const { userId } = doc.data();
     handleDataMigration(userId);
 }
@@ -65,7 +66,7 @@ const handleDataMigration = async (userId) => {
     try {
         const currentUser = firebase.auth().currentUser;
 
-        // Obtener todos los condominios del usuario origen
+        // Buscar todos los documentos de los condominios del usuario origen
         const condominiosSnapshot = await firebase.firestore()
             .collection('users')
             .doc(userId)
@@ -79,12 +80,12 @@ const handleDataMigration = async (userId) => {
 
         const batch = firebase.firestore().batch();
 
-        // Iterar sobre cada condominio para copiar ambas subcolecciones
+        // Iterar sobre cada condominio para copiarlo
         await Promise.all(condominiosSnapshot.docs.map(async (doc) => {
             const condominioData = doc.data();
             const condominioId = doc.id;
 
-            // Copiar el documento principal (por ID)
+            // Guardar el condominio principal en la cuenta actual
             const newCondominioRef = firebase.firestore()
                 .collection('users')
                 .doc(currentUser.uid)
@@ -93,55 +94,45 @@ const handleDataMigration = async (userId) => {
 
             batch.set(newCondominioRef, condominioData);
 
-            // Obtener y copiar la subcolección 'propiedades' (por ID)
+            // Obtener y copiar la subcolección 'propiedades' desde el documento original
             const propiedadesSnapshot = await doc.ref.collection('propiedades').get();
+
+            // Guardar cada documento de 'propiedades' en la nueva colección
             const newPropiedadesRef = newCondominioRef.collection('propiedades');
             propiedadesSnapshot.forEach(propDoc => {
                 batch.set(newPropiedadesRef.doc(propDoc.id), propDoc.data());
-            });
-
-            // Ahora copiar la subcolección basada en el nombre del condominio
-            const nombreCondominio = condominioData.name;
-            const condominioNombreRef = firebase.firestore()
-                .collection('users')
-                .doc(currentUser.uid)
-                .collection('condominios')
-                .doc(nombreCondominio);
-
-            batch.set(condominioNombreRef, condominioData);
-
-            // Copiar la subcolección 'propiedades' también desde este documento
-            const propiedadesNombreSnapshot = await doc.ref.collection('propiedades').get();
-            const newPropiedadesNombreRef = condominioNombreRef.collection('propiedades');
-            propiedadesNombreSnapshot.forEach(propDoc => {
-                batch.set(newPropiedadesNombreRef.doc(propDoc.id), propDoc.data());
             });
         }));
 
         await batch.commit();
         console.log('Datos migrados exitosamente.');
+
+        // Actualizar la interfaz con los datos del nuevo condominio copiado
+        const newCondominioData = await Promise.all(condominiosSnapshot.docs.map(async (doc) => {
+            const condominioName = doc.data().name;
+            const propiedadesSnapshot = await doc.ref.collection('propiedades').get();
+            const residents = propiedadesSnapshot.docs.map(doc => doc.data());
+            return {
+                name: condominioName,
+                datos: {
+                    residents: residents
+                }
+            };
+        }));
+
+        mostrarDatosCondominioEnInterfaz(newCondominioData);
     } catch (error) {
-        console.error('Error en la migración de datos:', error);
+        console.error('Error:', error.message);
     }
 };
 
 // MOSTRAR DATOS DEL CONDOMINIO EN LA INTERFAZ
 function mostrarDatosCondominioEnInterfaz(condominios) {
     const opcionesSelect = document.getElementById('opciones');
-    const residentsList = document.getElementById('residentsList');
-
     if (!opcionesSelect) {
         console.error('Elemento #opciones no encontrado en el DOM.');
         return;
     }
-    if (!residentsList) {
-        console.error('Elemento #residentsList no encontrado en el DOM.');
-        return;
-    }
-
-    // Limpiar el select y la lista de residentes
-    opcionesSelect.innerHTML = '';
-    residentsList.innerHTML = '';
 
     condominios.forEach(condominioData => {
         const option = document.createElement('option');
@@ -149,12 +140,16 @@ function mostrarDatosCondominioEnInterfaz(condominios) {
         option.textContent = condominioData.name;
         opcionesSelect.appendChild(option);
 
-        // Mostrar residentes
-        condominioData.datos.residents.forEach(resident => {
-            const listItem = document.createElement('li');
-            listItem.textContent = resident.name; // Suponiendo que cada residente tiene un campo 'name'
-            residentsList.appendChild(listItem);
-        });
+        const residentsList = document.getElementById('residentsList');
+        if (residentsList) {
+            residentsList.innerHTML = ''; // Limpiar lista anterior
+            condominioData.datos.residents.forEach(resident => {
+                const listItem = document.createElement('li');
+                listItem.textContent = resident.name; // Suponiendo que cada residente tiene un campo 'name'
+                residentsList.appendChild(listItem);
+            });
+        } else {
+            console.error('Elemento #residentsList no encontrado en el DOM.');
+        }
     });
 }
-
