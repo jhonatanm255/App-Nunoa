@@ -63,8 +63,8 @@ span{
     padding: 40px 10px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgb(52, 51, 51);
-    z-index: 1000; /* Asegura que la tarjeta esté por encima del contenido de la página */
-    display: none; /* Por defecto, oculta la tarjeta flotante */
+    z-index: 1000; 
+    display: none;
   }
   
   .img-logo{
@@ -128,10 +128,6 @@ span{
 .edicion{
   display: none;
 }
-
-
-
-/* Agrega esto a tu hoja de estilo CSS o en el bloque de estilo en tu HTML */
 
 /* Estilo para la ventana flotante */
 .ventana-flotante {
@@ -453,11 +449,17 @@ select {
 }
 
 #container-import {
-  position: absolute;
-  z-index: 100;
- margin: auto;
+ position: absolute;
+ z-index: 5000;
+ margin-left: 50%;
+ margin-right: 50%;
+ margin-top: 50%;
+ margin-bottom: 50%;
+ transform: translate(-50%, -50%);
  background-color: rgb(230, 230, 230);
  padding: 30px;
+ border-radius: 10px;
+
 }
 
 #container-import {
@@ -496,6 +498,17 @@ select {
   cursor: pointer;
 }
 
-.close-btn:hover {
-  color: red; /* Cambia de color cuando el mouse pasa por encima */
+/* Overlay: Fondo semitransparente que cubre toda la pantalla */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo negro semitransparente */
+  z-index: 999; /* Colocar el overlay detrás del modal */
+}
+
+.active-over {
+  display: block;
 }

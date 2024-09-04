@@ -5,9 +5,9 @@ const exportCodeSpan = document.getElementById('exportCode');
 
 btnGenerateCode.addEventListener('click', async () => {
     try {
-        const exportCode = generateRandomNumericCode(4); // Generar código numérico de 4 dígitos
-        exportCodeSpan.textContent = exportCode; // Mostrar el código generado en el span
-        exportCodeContainer.style.display = 'block'; // Mostrar el contenedor
+        const exportCode = generateRandomNumericCode(4);
+        exportCodeSpan.textContent = exportCode;
+        exportCodeContainer.style.display = 'block';
         console.log('Export code generated:', exportCode);
         exportCodeContainer.innerText = exportCode;
 
@@ -37,6 +37,8 @@ const btnFormCode = document.getElementById('import');
 btnFormCode.addEventListener('click', () => {
     const importContent = document.getElementById('container-import');
     importContent.style.display = 'block';
+    const overlay = document.querySelector('.overlay');
+    overlay.style.display = 'block'
     const myModal = document.getElementById('myModal');
     myModal.style.display = 'none';
 
@@ -45,6 +47,8 @@ btnFormCode.addEventListener('click', () => {
     closeBtn.addEventListener('click', () => {
     const importContent = document.getElementById('container-import');
     importContent.style.display = 'none';
+    const overlay = document.querySelector('.overlay');
+    overlay.style.display = 'none'
 });
 });
 
@@ -84,6 +88,7 @@ const handleDataMigration = async (userId) => {
         await Promise.all(condominiosSnapshot.docs.map(async (doc) => {
             const condominioData = doc.data();
             const condominioId = doc.id;
+            console.log(`Intentando obtener los datos del condominio con ID: ${condominioId}`);
 
             // Guardar el condominio principal en la cuenta actual
             const newCondominioRef = firebase.firestore()
@@ -97,11 +102,20 @@ const handleDataMigration = async (userId) => {
             // Obtener y copiar la subcolección 'propiedades' desde el documento original
             const propiedadesSnapshot = await doc.ref.collection('propiedades').get();
 
-            // Guardar cada documento de 'propiedades' en la nueva colección
-            const newPropiedadesRef = newCondominioRef.collection('propiedades');
-            propiedadesSnapshot.forEach(propDoc => {
-                batch.set(newPropiedadesRef.doc(propDoc.id), propDoc.data());
-            });
+            if (!propiedadesSnapshot.empty) {
+                const newPropiedadesRef = newCondominioRef.collection('propiedades');
+                propiedadesSnapshot.forEach(propDoc => {
+                    batch.set(newPropiedadesRef.doc(propDoc.id), propDoc.data());
+
+                    // Obtener y copiar la subcolección 'residentes'
+                    propDoc.ref.collection('residentes').get().then(residentesSnapshot => {
+                        residentesSnapshot.forEach(residentDoc => {
+                            const newResidentRef = newPropiedadesRef.doc(propDoc.id).collection('residentes').doc(residentDoc.id);
+                            batch.set(newResidentRef, residentDoc.data());
+                        });
+                    });
+                });
+            }
         }));
 
         await batch.commit();
@@ -121,6 +135,7 @@ const handleDataMigration = async (userId) => {
         }));
 
         mostrarDatosCondominioEnInterfaz(newCondominioData);
+
     } catch (error) {
         console.error('Error:', error.message);
     }

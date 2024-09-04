@@ -59,10 +59,12 @@
             </div>
         </div>
 
+        <div id="overlay" class="overlay" style="display:none;"></div>
+
         <div id="container-import" class="active">
             <span class="close">&times;</span>
             <input type="number" id="importCode" placeholder="Ingrese el código">
-            <button onclick="importData()">Import Data</button>
+            <button class="btn-general" onclick="importData()">Importar Datos</button>
         </div>
   
         <video id="video" width="300" height="200"></video>
@@ -70,7 +72,7 @@
          
         <div class="main">
             <h3 class="title-main">Registrar Residentes</h3>
-            <h3><i class='bx bxs-user-rectangle'></i> Residentes</h3>
+            <h3><i class='bx bxs-user'></i> Residentes</h3>
             <div class="slide"><input type="text" id="nombre" required><i id="slide" class='bx bx-down-arrow-alt'></i></div>
             <div class="inputs-ocultos">
                 <input type="text" id="nombre2" required>
