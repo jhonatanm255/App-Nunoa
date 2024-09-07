@@ -3,7 +3,7 @@
     "short_name": "Control de Condominios",
     "theme_color": "",
     "background_color": "",
-    "display": "fullscreen",
+    "display": "standalone",
     "orientation": "portrait",
     "scope": "./",
     "start_url": "./",
