@@ -1,0 +1,17 @@
+{
+    "name": "Control de Condominios",
+    "short_name": "Control de Condominios",
+    "theme_color": "",
+    "background_color": "",
+    "display": "fullscreen",
+    "orientation": "portrait",
+    "scope": "./",
+    "start_url": "./",
+    "icons": [
+        {
+            "src": "logo-condominio.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}
