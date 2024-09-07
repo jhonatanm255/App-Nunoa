@@ -1,7 +1,7 @@
 .main img {
     width: 100px;
-    height: 110px;
-    margin: 20px auto 10px;
+    height: 100px;
+    margin: 10px auto 0px;
   }
   
   .content {
@@ -28,6 +28,7 @@
   
   .main{
       padding: 0 50px;
+      margin-top: -20px;
   }
 
   .title-residentes {

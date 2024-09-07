@@ -40,7 +40,8 @@ function crearPropiedad() {
           bodega: bodega
         })
         .then(() => {
-          mostrarVentanaFlotante('Registro satisfactorio');
+          swal('Regístro Satisfactorio', "", "success");
+          // mostrarVentanaFlotante('Registro satisfactorio');
           limpiarCampos();
         })
         .catch(error => {
@@ -292,11 +293,10 @@ function actualizarPropiedad() {
           bodega: bodegaEdicion
         })
         .then(() => {
-          mostrarVentanaFlotante('Propiedad actualizada satisfactoriamente');
+          swal('Actualización Satisfactoria', "", "success");
           document.getElementById('formularioEdicion').style.display = 'none';
           limpiarCampos();
           cerrarTarjeta();
-          leerPropiedades();
         })
         .catch(error => {
           console.error('Error al actualizar la propiedad:', error);

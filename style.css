@@ -33,7 +33,6 @@ body {
     transition: .3s;
 }
 
-
 .space-up{
   margin-top: 15px;
 }
@@ -43,13 +42,9 @@ h1 {
     margin-bottom: 20px;
 }
 
-
-
 span{
     color: aliceblue;
 }
-
-
 
 /* Estilos para la tarjeta flotante */
 .tarjeta-flotante {
@@ -68,12 +63,12 @@ span{
   }
   
   .img-logo{
-    width: 40px;
+    width: 60px;
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: 7%;
+    margin-left: 2%;
   }
 
   .btn-edit-elim{
@@ -375,16 +370,16 @@ select {
 /* Estilos para el formulario de registro */
 .registerForm {
   position: absolute;
-  top: 42.5%;
+  top: 47.2%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #ffffff;
-  border-radius: 10px;
+  border-radius: 0 0 10px 10px;
   padding: 20px;
   text-align: center;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
   border: solid 1px #ccc;
 }
 
@@ -425,6 +420,12 @@ select {
 .user {
   font-size: 22px;
   margin: auto;
+  color: #3f3f3f;
+}
+
+.user-index {
+  font-size: 22px;
+  margin: start;
   color: #3f3f3f;
 }
 
